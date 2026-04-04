@@ -1,9 +1,58 @@
 #grid {
         display: grid;
-        grid-template-columns: repeat(10,20px);
+        grid-template-columns: repeat(15,32px);
+        font-size: xx-large;
 }
 
-#grid div {
-        width: 20px;
-        height: 20px;
+#grid img {
+        width: 32px;
+        height: 32px;
+}
+
+.backdrop {
+        color: black;
+}
+
+.snakeHead {
+        color: darkgreen;
+}
+
+.snake {
+        color: green;
+}
+
+.powerup {
+        color: red;
+}
+
+.snakeHeadDown {
+        transform: scaleY(-1);
+}
+
+.snakeHeadLeft {
+        transform: rotate(-90deg)
+}
+
+.snakeHeadRight {
+        transform: rotate(90deg);
+}
+
+.snakeHorizontal {
+        transform: rotate(90deg);
+}
+
+.snakeTurnTR {
+        transform: rotate(-90deg);
+}
+
+.snakeTurnTL {
+        transform: rotate(180deg);
+}
+
+.snakeTurnBR {
+        transform: rotate(0deg);
+}
+
+.snakeTurnBL {
+        transform: rotate(90deg);
 }
