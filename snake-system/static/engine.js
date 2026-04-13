@@ -51,45 +51,45 @@ window.addEventListener('keydown', (event) => {
 function setImg() {
         let bgimages = document.getElementsByClassName("backdrop");
         for (let i=0; i < bgimages.length; i++) {
-                bgimages[i].src = "backtile.png";
+                bgimages[i].src = "static/backtile.png";
         }
 
         let snakeimages = document.getElementsByClassName("snake");
         for (let i=0; i < snakeimages.length; i++) {
-                snakeimages[i].src = "snakebod.png";
+                snakeimages[i].src = "static/snakebod.png";
         }
 
         let snakeHimages = document.getElementsByClassName("snakeHorizontal");
         for (let i=0; i < snakeHimages.length; i++) {
-                snakeHimages[i].src = "snakebod.png";
+                snakeHimages[i].src = "static/snakebod.png";
         }
 
         let snakeVimages = document.getElementsByClassName("snakeVertical");
         for (let i=0; i < snakeVimages.length; i++) {
-                snakeVimages[i].src = "snakebod.png";
+                snakeVimages[i].src = "static/snakebod.png";
         }
 
         let snakeTRimages = document.getElementsByClassName("snakeTurnTR");
         for (let i=0; i < snakeTRimages.length; i++) {
-                snakeTRimages[i].src = "snakeCurve.png";
+                snakeTRimages[i].src = "static/snakeCurve.png";
         }
         let snakeBRimages = document.getElementsByClassName("snakeTurnBR");
         for (let i=0; i < snakeBRimages.length; i++) {
-                snakeBRimages[i].src = "snakeCurve.png";
+                snakeBRimages[i].src = "static/snakeCurve.png";
         }
         let snakeTLimages = document.getElementsByClassName("snakeTurnTL");
         for (let i=0; i < snakeTLimages.length; i++) {
-                snakeTLimages[i].src = "snakeCurve.png";
+                snakeTLimages[i].src = "static/snakeCurve.png";
         }
         let snakeBLimages = document.getElementsByClassName("snakeTurnBL");
         for (let i=0; i < snakeBLimages.length; i++) {
-                snakeBLimages[i].src = "snakeCurve.png";
+                snakeBLimages[i].src = "static/snakeCurve.png";
         }
 
-        if (direction == LEFT) document.querySelector(".snakeHeadLeft").src = "snakehead.png";
-        else if (direction == RIGHT) document.querySelector(".snakeHeadRight").src = "snakehead.png";
-        else if (direction == UP) document.querySelector(".snakeHeadUp").src = "snakehead.png";
-        else if (direction == DOWN) document.querySelector(".snakeHeadDown").src = "snakehead.png";
+        if (direction == LEFT) document.querySelector(".snakeHeadLeft").src = "static/snakehead.png";
+        else if (direction == RIGHT) document.querySelector(".snakeHeadRight").src = "static/snakehead.png";
+        else if (direction == UP) document.querySelector(".snakeHeadUp").src = "static/snakehead.png";
+        else if (direction == DOWN) document.querySelector(".snakeHeadDown").src = "static/snakehead.png";
 }
 
 function moveLeft() {
