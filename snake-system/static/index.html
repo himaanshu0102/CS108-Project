@@ -5,7 +5,17 @@
         </head>
 
         <body>
+                
+                <div id="popup" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center;">
+                <div style="background:white; padding:2rem; border-radius:12px; text-align:center;">
+                        <h2>Enter Your Name</h2>
+                        <input type="text" id="username" placeholder="Your name...">
+                        <br><br>
+                        <button onclick="startGame()">Start Game</button>
+                </div>
+                </div>
                 <h1 id="score">score : 0</h1>
+                <h2 id="timestamp">timestamp : 0</h2>
                 <p>
                         <div id="grid">
                                 <img src="static/backtile.png" class="backdrop" id="0,0"></img><img src="static/backtile.png" class="backdrop" id="1,0"></img><img src="static/backtile.png" class="backdrop" id="2,0"></img><img src="static/backtile.png" class="backdrop" id="3,0"></img><img src="static/backtile.png" class="backdrop" id="4,0"></img><img src="static/backtile.png" class="backdrop" id="5,0"></img><img src="static/backtile.png" class="backdrop" id="6,0"></img><img src="static/backtile.png" class="backdrop" id="7,0"></img><img src="static/backtile.png" class="backdrop" id="8,0"></img><img src="static/backtile.png" class="backdrop" id="9,0"></img><img src="static/backtile.png" class="backdrop" id="10,0"></img><img src="static/backtile.png" class="backdrop" id="11,0"></img><img src="static/backtile.png" class="backdrop" id="12,0"></img><img src="static/backtile.png" class="backdrop" id="13,0"></img><img src="static/backtile.png" class="backdrop" id="14,0"></img>

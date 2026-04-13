@@ -1,3 +1,24 @@
+let playerName = "";
+let gameResult = {};
+
+function startGame() {
+  const name = document.getElementById("username").value.trim();
+
+  if (!name) {
+    alert("Please enter your name!");
+    return;
+  }
+
+  playerName = name;
+
+  // hide popup
+  document.getElementById("popup").style.display = "none";
+
+  // start timer
+  startTimer();
+}
+
+
 class Point {
         constructor(x = 0, y = 0, type) {
                 this.x = x;
@@ -204,7 +225,15 @@ function addScore() {
         score++;
         document.getElementById("score").innerText="score : "+String(score);
 }
+let timestamp = 0;
 
+
+function startTimer() {
+        timeinterval = setInterval(function() {
+                timestamp++;
+                document.getElementById("timestamp").innerText="timestamp : "+String(timestamp);
+        },1000);
+}
 function physicsProcess() {
         let n = snake.length;
         document.getElementById(String(snake[0].x)+","+String(snake[0].y)).innerText='█';
@@ -231,7 +260,13 @@ function physicsProcess() {
                 if (snake[0].x == snake[i].x && snake[0].y == snake[i].y) {
                         snake[0].x = -1;
                         snake[0].y = -1;
-                        alert("game over");
+                        gameResult = {
+                                name: playerName,
+                                score: score,
+                                timestamp: timestamp
+                        }
+                        alert("game over \n Name: " + gameResult.name + "\n score: " + String(gameResult.score) + "\n timestamp: " + String(gameResult.timestamp));
+
                         location.reload();
                 }
         }
