@@ -1,10 +1,5 @@
 #!/bin/bash
-if [ ! -f history.txt ]; then
-    echo -e "${BOLD}${RED}No history file found${RESET}"
-elif [ ! -s history.txt ]; then
-    echo -e "${BOLD}${RED}History file is empty${RESET}"
-else
-    while true; do
+
 
 #color codes
 RED='\033[31m'
@@ -26,10 +21,18 @@ print_colored() {
         fi
     done
 }
+if [ ! -f history.txt ]; then
+    echo -e "${BOLD}${RED}No history file found${RESET}"
+elif [ ! -s history.txt ]; then
+    echo -e "${BOLD}${RED}History file is empty${RESET}"
+else
+    while true; do
+
 #choices
 
-
-    echo -e "${BOLD}${YELLOW}Snake Admin Menu${RESET}"
+    echo "================================"
+    echo -e "${BOLD}${GREEN}       Snake Admin Menu${RESET}"
+    echo "================================"
     echo -e "${YELLOW}1. Select User Name${RESET}"
     echo -e "${YELLOW}2. View Analytics${RESET}"
     echo -e "${YELLOW}3. View Recent Scores${RESET}"
@@ -383,5 +386,5 @@ print_colored() {
     else
         echo -e "${RED}Invalid choice. Please try again.${RESET}"
     fi
-done
+    done
 fi
