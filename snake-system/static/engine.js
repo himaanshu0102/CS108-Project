@@ -1,3 +1,35 @@
+let playerName = '';
+
+document.getElementById('startBtn').addEventListener('click', function() {
+    let name = document.getElementById('Username').value.trim();
+    if (name === '') {
+        document.getElementById('errorMsg').style.display = 'block';
+        document.getElementById('Username').style.borderColor = '#f44336';
+        return;
+    }
+    playerName = name.split(' ')[0];
+    document.getElementById('errorMsg').style.display = 'none';
+    document.getElementById('popup').style.display = 'none';
+    setInterval(physicsProcess, speed);
+});
+
+document.getElementById('Username').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        document.getElementById('startBtn').click();
+    }
+    if (e.key === ' ') {
+        e.preventDefault();
+    }
+});
+
+
+
+
+
+
+
+
+
 const pi = Math.PI;
 
 //defining canvas elements
@@ -12,22 +44,22 @@ canvas.height = 640;
 
 //defining images
 const bg = new Image();
-bg.src = 'backtile2.png';
+bg.src = 'static/backtile2.png';
 
 const sHead = new Image();
-sHead.src = 'snakehead.png';
+sHead.src = 'static/snakehead.png';
 
 const sBod = new Image();
-sBod.src = 'snakebod.png';
+sBod.src = 'static/snakebod.png';
 
 const sCurve = new Image();
-sCurve.src = 'snakeCurve.png';
+sCurve.src = 'static/snakecurve.png';
 
 const sTail = new Image();
-sTail.src = 'snaketail.png';
+sTail.src = 'static/snaketail.png';
 
 const greenApple = new Image();
-greenApple.src = 'Apple.png';
+greenApple.src = 'static/Apple.png';
 
 //defining the Point class(used to store positions of snake parts and to define direction)
 //for the type variable, 0 = snake head, 1 = snake body, 2 = curve, 3 = tail, 10 = powerup 1
@@ -335,6 +367,6 @@ function physicsProcess() {
         console.log(snake[0].x + " " + snake[0].y)
 }
 
-if(!dead){
-        setInterval (physicsProcess, speed);
-}
+//if(!dead){
+ //       setInterval (physicsProcess, speed);
+//}

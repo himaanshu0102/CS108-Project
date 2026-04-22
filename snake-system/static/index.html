@@ -1,9 +1,67 @@
 <!DOCTYPE html>
 <html>
         <head>
+                <link rel="stylesheet" href="/static/style.css">
         </head>
 
         <body>
+                
+                <div id='popup'>
+                        <div id='SNAKE'>SNAKE</div>
+                        <div id='foodbox'>
+                                <div id='foodtype'>FOOD TYPES</div>
+                                <div>
+                                        <span class="dot carrot"></span>
+                                        <span class="label">Carrot -</span>
+                                        <span class="effect">health +1</span>
+                                </div>
+                                <div>
+                                        <span class="dot pumpkin"></span>
+                                        <span class="label">Pumpkin Pie -</span>
+                                        <span class="effect">health +3</span>
+                                </div>
+                                <div>
+                                        <span class="dot golden"></span>
+                                        <span class="label">Golden Apple -</span>
+                                        <span class="effect">immunity 10s</span>
+                                </div>
+                        </div>
+  
+                        <div>
+                                <span class="keybox">
+                                        <span class="keyword">W</span>
+                                </span>
+                                <span class="keybox">
+                                        <span class="keyword">A</span>
+                                </span>
+                                <span class="keybox">
+                                        <span class="keyword">S</span>
+                                </span>
+                                <span class="keybox">
+                                        <span class="keyword">D</span>
+                                </span>
+                                <span class="middle">or</span>
+                                <span class="keybox">
+                                        <span class="keyword">&uarr;</span>
+                                </span>
+                                <span class="keybox">
+                                        <span class="keyword">&larr;</span>
+                                </span>
+                                <span class="keybox">
+                                        <span class="keyword">&darr;</span>
+                                </span>
+                                <span class="keybox">
+                                        <span class="keyword">&rarr;</span>
+                                </span>
+                                <span class="middle">to move</span>
+        
+                        </div>
+      
+                        <input type="text" id="Username" placeholder="Enter your First name">
+                        <p class="error-msg" id="errorMsg">Please enter your name</p>
+                        <button class="start-btn" id="startBtn">Start Game</button>
+                </div>
+      
                 <canvas id="gameCanvas"></canvas>
                 <script src="static/engine.js"></script>
         </body>
