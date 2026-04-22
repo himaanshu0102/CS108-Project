@@ -1,118 +1,93 @@
-let playerName = "";
-let gameResult = {};
+const pi = Math.PI;
 
-function startGame() {
-  const name = document.getElementById("username").value.trim();
+//defining canvas elements
+/** @type {HTMLCanvasElement} */
+const canvas = document.getElementById('gameCanvas');
 
-  if (!name) {
-    alert("Please enter your name!");
-    return;
-  }
+/** @type {CanvasRenderingContext2D} */
+const ctx = canvas.getContext('2d');
 
-  playerName = name;
+canvas.width = 480;
+canvas.height = 640;
 
-  // hide popup
-  document.getElementById("popup").style.display = "none";
+//defining images
+const bg = new Image();
+bg.src = 'backtile2.png';
 
-  // start timer
-  startTimer();
-}
+const sHead = new Image();
+sHead.src = 'snakehead.png';
 
+const sBod = new Image();
+sBod.src = 'snakebod.png';
 
+const sCurve = new Image();
+sCurve.src = 'snakeCurve.png';
+
+const sTail = new Image();
+sTail.src = 'snaketail.png';
+
+const greenApple = new Image();
+greenApple.src = 'Apple.png';
+
+//defining the Point class(used to store positions of snake parts and to define direction)
+//for the type variable, 0 = snake head, 1 = snake body, 2 = curve, 3 = tail, 10 = powerup 1
 class Point {
         constructor(x = 0, y = 0, type) {
                 this.x = x;
                 this.y = y;
-        }
-        setText() {
-                document.getElementById(String(this.x)+","+String(this.y)).innerText='█';
-        }
-        setInvis() {
-                document.getElementById(String(this.x)+","+String(this.y)).innerText='█';
-        }
-        setClass(classname)  {
-                document.getElementById(String(this.x)+","+String(this.y)).className = classname;
+                this.type = type;
         }
 }
 
-let p0 = new Point(0,0);
-p0.setClass("snakeHead");
+//defining the snake array with initial element as snake head
+let p0 = new Point(0,0,0);
 let snake = [p0]
 
+//setting a seperate variable for 
+let n=snake.length;
+
+//defining the directions wrt grid
 const RIGHT = new Point(1,0);
 const LEFT = new Point(-1,0)
 const UP = new Point(0,1);
 const DOWN = new Point(0,-1);
 
 let direction = RIGHT;
+let nextDirection = RIGHT;
 
+//defining a randomizer function
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+//defining the speed of the game (frequency at which game loop repeats(in ms)). one "game tick" is just this amount of time(again, in ms)
 let speed = 100;
 
+//making variables to make sure snake doesnt go through itself
+let leftDelay = 0;
+let rightDelay = 0;
+let upDelay = 0;
+let downDelay = 0;
+
+//changing direction based on keyboard inputs. direction is assigned to newDirection instead of direction directly to prevent multiple direction changes in the same game tick
 window.addEventListener('keydown', (event) => {
 
         if ((event.key === "d" || event.key === 'ArrowRight') && direction != LEFT) {
-                direction = RIGHT;
+                nextDirection = RIGHT;
         }
         if ((event.key === "a" || event.key === 'ArrowLeft') && direction != RIGHT) {
-                direction = LEFT;
+                nextDirection = LEFT;
         }
         if ((event.key === "w" || event.key === 'ArrowUp') && direction != DOWN) {
-                direction = UP;
+                nextDirection = UP;
         }
         if ((event.key === "s" || event.key === 'ArrowDown') && direction != UP) {
-                direction = DOWN;       
+                nextDirection = DOWN;
         }
 
 });
 
-function setImg() {
-        let bgimages = document.getElementsByClassName("backdrop");
-        for (let i=0; i < bgimages.length; i++) {
-                bgimages[i].src = "static/backtile.png";
-        }
-
-        let snakeimages = document.getElementsByClassName("snake");
-        for (let i=0; i < snakeimages.length; i++) {
-                snakeimages[i].src = "static/snakebod.png";
-        }
-
-        let snakeHimages = document.getElementsByClassName("snakeHorizontal");
-        for (let i=0; i < snakeHimages.length; i++) {
-                snakeHimages[i].src = "static/snakebod.png";
-        }
-
-        let snakeVimages = document.getElementsByClassName("snakeVertical");
-        for (let i=0; i < snakeVimages.length; i++) {
-                snakeVimages[i].src = "static/snakebod.png";
-        }
-
-        let snakeTRimages = document.getElementsByClassName("snakeTurnTR");
-        for (let i=0; i < snakeTRimages.length; i++) {
-                snakeTRimages[i].src = "static/snakeCurve.png";
-        }
-        let snakeBRimages = document.getElementsByClassName("snakeTurnBR");
-        for (let i=0; i < snakeBRimages.length; i++) {
-                snakeBRimages[i].src = "static/snakeCurve.png";
-        }
-        let snakeTLimages = document.getElementsByClassName("snakeTurnTL");
-        for (let i=0; i < snakeTLimages.length; i++) {
-                snakeTLimages[i].src = "static/snakeCurve.png";
-        }
-        let snakeBLimages = document.getElementsByClassName("snakeTurnBL");
-        for (let i=0; i < snakeBLimages.length; i++) {
-                snakeBLimages[i].src = "static/snakeCurve.png";
-        }
-
-        if (direction == LEFT) document.querySelector(".snakeHeadLeft").src = "static/snakehead.png";
-        else if (direction == RIGHT) document.querySelector(".snakeHeadRight").src = "static/snakehead.png";
-        else if (direction == UP) document.querySelector(".snakeHeadUp").src = "static/snakehead.png";
-        else if (direction == DOWN) document.querySelector(".snakeHeadDown").src = "static/snakehead.png";
-}
-
+//defining functions to move the snake head
 function moveLeft() {
         if (snake[0].x > 0) {
                 snake[0].x--;
@@ -120,30 +95,6 @@ function moveLeft() {
         else if (snake[0].x == 0) {
                 snake[0].x = 14;
         }
-}
-
-function setSnakeClass() {
-
-        for (let i = 1; i < snake.length-1; i++) {
-                if (snake[i-1].y == snake[i+1].y) snake[i].setClass("snakeHorizontal");
-                else if (snake[i-1].x == snake[i+1].x) snake[i].setClass("snakeVertical");
-                else {
-                        let dx1 = snake[i].x-snake[i-1].x;
-                        let dy1 = snake[i].y-snake[i-1].y;
-
-                        let dx2 = snake[i+1].x - snake[i].x;
-                        let dy2 = snake[i+1].y - snake[i].y;
-
-                        if (dx1 == 1 && dy2 == 1 || dx2 == -1 && dy1 == -1) snake[i].setClass("snakeTurnBL");
-                        if (dx2 == 1 && dy1 == -1 || dx1 == -1 && dy2 == 1) snake[i].setClass("snakeTurnBR");
-                        if (dx2 == -1 && dy1 == 1 || dx1 == 1 && dy2 == -1) snake[i].setClass("snakeTurnTL");
-                        if (dx1 == -1 && dy2 == -1 || dx2 == 1 && dy1 == 1) snake[i].setClass("snakeTurnTR")
-                }
-        }
-
-        if (snake[snake.length-1].x == snake[snake.length-2].x) snake[snake.length-1].setClass("snakeVertical");
-        else if (snake[snake.length-1].y == snake[snake.length-2].y) snake[snake.length-1].setClass("snakeHorizontal");
-
 }
 
 function moveRight() {
@@ -173,113 +124,217 @@ function moveDown() {
         }
 }
 
+function setType(n) {
+        snake[0].type = 0;
+        for (let i = 1; i < n-1; i++) {
+                if (snake[i-1].y == snake[i+1].y) snake[i].type = 1
+                else if (snake[i-1].x == snake[i+1].x) snake[i].type = 1;
+                else snake[i].type = 2;
+        }
+        snake[n-1].type = 3;
+}
+
+//drawing images for all points of snake
+function setImage() {
+        console.log("snake:", JSON.stringify(snake));
+        console.log("n:", n);
+        
+        //setting snake body length
+        for(let i = 1; i < n-1; i++){
+                ctx.save();
+                ctx.translate(snake[i].x * 32 + 16, snake[i].y * 32 + 16);
+                if (snake[i].type == 1){
+                        if (snake[i-1].y == snake[i+1].y){
+                                ctx.rotate(pi/2);
+                                ctx.drawImage(sBod, -16, -16);
+                        }
+                        else if (snake[i-1].x == snake[i+1].x) ctx.drawImage(sBod, -16, -16);
+                }
+
+                else if (snake[i].type == 2){
+                        //defining variables based on change from previous and next point on snake
+                        let dx1 = snake[i].x-snake[i-1].x;
+                        let dy1 = snake[i].y-snake[i-1].y;
+
+                        let dx2 = snake[i+1].x - snake[i].x;
+                        let dy2 = snake[i+1].y - snake[i].y;
+
+                        //defining a variable to set rotation. rot is multiplied by pi/2 in the end to get desired rotation
+                        //base image has its concave corner facing towards the bottom right (i.e. the desired rotation for a turn to the right wrt snake head).
+                        let rot;
+
+                        if (dx1 == 1 && dy2 == 1 || dx2 == -1 && dy1 == -1) rot=1;
+                        else if (dx2 == 1 && dy1 == -1 || dx1 == -1 && dy2 == 1) rot=0;
+                        else if (dx2 == -1 && dy1 == 1 || dx1 == 1 && dy2 == -1) rot=2;
+                        else if (dx1 == -1 && dy2 == -1 || dx2 == 1 && dy1 == 1) rot=-1;
+
+                        else if (dx1 == 1 && dy2 == -19 || dx2 == -1 && dy1 == 19) rot=1;
+                        else if (dx1 == -1 && dy2 == -19 || dx2 == 1 && dy1 == 19) rot=0;
+                        else if (dx1 == 1 && dy2 == 19 || dx2 == -1 && dy2 == -19) rot=2;
+                        else if (dx1 == -1 && dy2 == 19 || dx2 == 1 && dy1 == -19) rot=-1;
+
+                        else if (dx1 == 14 && dy1 == 1 || dx2 == -14 && dy2 == -1) rot=0;
+                        else if (dx1 == 14 && dy2 == -1 || dx2 == -14 && dy1 == 1) rot=-1;
+                        else if (dx1 == -14 && dy2 == 1 || dx2 == 14 && dy1 == -1) rot=1;
+                        else if (dx1 == -14 && dy2 == -1 || dx2 == 14 && dy1 == 1) rot=2;
+
+                        ctx.rotate(pi/2 * rot);
+                        ctx.drawImage(sCurve, -16, -16);
+                }
+                ctx.restore();
+        }
+
+        //setting tail image
+        ctx.save();
+        ctx.translate(snake[n-1].x * 32 + 16, snake[n-1].y * 32 + 16);
+        if(n>1) {
+                if (snake[n-1].x == snake[n-2].x){
+                        if(snake[n-1].y < snake[n-2].y || (snake[n-2].y == 0 && snake[n-1].y == 19)){
+                                ctx.drawImage(sTail, -16, -16);
+                        }
+                        else if(snake[n-1].y > snake[n-2].y || (snake[n-2].y == 19 && snake[n-1].y == 0)){
+                                ctx.rotate(pi);
+                                ctx.drawImage(sTail, -16, -16);
+                        }
+                }
+
+                else if (snake[n-1].y == snake[n-2].y){
+                        if(snake[n-1].x < snake[n-2].x || (snake[n-2].x == 0 && snake[n-1].x == 14)){
+                                ctx.rotate(-pi/2);
+                                ctx.drawImage(sTail, -16, -16);
+                        }
+                        else if(snake[n-1].x > snake[n-2].x || (snake[n-2].x == 14 && snake[n-1].x == 0)){
+                                ctx.rotate(pi/2);
+                                ctx.drawImage(sTail, -16, -16);
+                        }
+                }
+        }
+        ctx.restore();
+        
+        //setting image for powerups
+        let k = powerups.length;
+
+        for(let i = 0; i < k; i++) {
+                ctx.save();
+                ctx.translate(powerups[i].x * 32 + 16, powerups[i].y * 32 +16);
+                ctx.drawImage(greenApple, -16, -16);
+                ctx.restore();
+        }
+
+        //setting head image
+        ctx.save();
+        ctx.translate(snake[0].x * 32 + 16, snake[0].y * 32 + 16);
+        if (direction == UP){
+                ctx.drawImage(sHead, -16, -16);
+        }
+        else if (direction == RIGHT){
+                ctx.rotate(pi/2);
+                ctx.drawImage(sHead, -16, -16);
+        }
+        else if (direction == DOWN){
+                ctx.rotate(pi);
+                ctx.drawImage(sHead, -16, -16);
+        }
+        else if (direction == LEFT){
+                ctx.rotate(-pi/2);
+                ctx.drawImage(sHead, -16, -16);
+        }
+        ctx.restore();
+}
+
+//defining function to add point to the length of the snake
 function addLength() {
         let x = new Point(snake[snake.length-1].x,snake[snake.length-1].y)
-        x.setClass("snake")
         snake.push(x);
 }
 
+//adding initial three snake body parts
 addLength();
 addLength();
 addLength();
 
 let powerups = [];
 
+let dead = 0;
+
 function spawnPowerUP() {
-        let xPower = getRandomInt(0,9);
-        let yPower = getRandomInt(0,9);
 
-        let isOccupied = false;
-        
-        for (let i = snake.length - 1; i >= 0; i--) {
-                if (xPower == snake[i].x && yPower == snake[i].y) {
-                        isOccupied = true;
-                        break;
+        let grid = [];
+        for (let x = 0; x < 15; x++) {
+                for (let y = 0; y < 20; y++){
+                        grid.push({x: x, y: y});
                 }
-                else isOccupied = false;
         }
 
-        if (isOccupied) {
-                xPower = getRandomInt(0,9);
-                yPower = getRandomInt(0,9);
-
-                for (let i = snake.length - 1; i >= 0; i--) {
-                        if (xPower == snake[i].x && yPower == snake[i].y) {
-                                isOccupied = true;
-                                break;
+        for (let i = 0; i < n; i++) {
+                for (let j = 0; j < grid.length; j++){
+                        if (snake[i].x == grid[j].x && snake[i].y == grid[j].y){
+                                grid.splice(j,1);
                         }
-                        else isOccupied = false;
                 }
         }
+
+        let rand = grid[getRandomInt(0, grid.length-1)];
+
+        let xPower = rand.x;
+        let yPower = rand.y;
 
         powerups.push(new Point(xPower, yPower));
-        powerups[powerups.length-1].setText();
-        powerups[powerups.length-1].setClass("snake");
+        powerups[powerups.length-1].type = 10;
 }
 
 spawnPowerUP();
 
-let score = 0;
-
-function addScore() {
-        score++;
-        document.getElementById("score").innerText="score : "+String(score);
-}
-let timestamp = 0;
-
-
-function startTimer() {
-        timeinterval = setInterval(function() {
-                timestamp++;
-                document.getElementById("timestamp").innerText="timestamp : "+String(timestamp);
-        },1000);
-}
 function physicsProcess() {
-        let n = snake.length;
-        document.getElementById(String(snake[0].x)+","+String(snake[0].y)).innerText='█';
+        ctx.clearRect(0, 0, 480, 640);
+        ctx.drawImage(bg, 0, 0, 480, 640)
+
+        n=snake.length;
+
+        //to ensure direction change is only measured once per tick
+        direction = nextDirection;
+
+        //copies state of i-1th point for ith point
+        //all calculations for image display, logic etc are done after this
         for (let i = n-1; i>0; i--) {
-                snake[i].setInvis();
-                snake[i].setClass("backdrop");
                 snake[i].x = snake[i-1].x;
                 snake[i].y = snake[i-1].y;
         }
+
+        //move head according to direction
         if (direction == UP) moveUp();
         else if (direction == LEFT) moveLeft();
         else if (direction == RIGHT) moveRight();
         else if (direction == DOWN) moveDown();
 
-        setSnakeClass();
+        //setting type variable for each point of the snake so that engine knows which image to assign. done after movement to make sure images are according to current state of game
+        setType(n);
 
-        if (direction == LEFT) snake[0].setClass("snakeHeadLeft");
-        else if (direction == RIGHT) snake[0].setClass("snakeHeadRight");
-        else if (direction == UP) snake[0].setClass("snakeHeadUp");
-        else if (direction == DOWN) snake[0].setClass("snakeHeadDown");
-        
-
-        for (let i = 1; i < n; i++) {
-                if (snake[0].x == snake[i].x && snake[0].y == snake[i].y) {
-                        snake[0].x = -1;
-                        snake[0].y = -1;
-                        gameResult = {
-                                name: playerName,
-                                score: score,
-                                timestamp: timestamp
-                        }
-                        alert("game over \n Name: " + gameResult.name + "\n score: " + String(gameResult.score) + "\n timestamp: " + String(gameResult.timestamp));
-
-                        location.reload();
-                }
-        }
-
+        //checking for collision with powerup
         for (let i = powerups.length-1; i>=0; i--) {
                 if (snake[0].x == powerups[i].x && snake[0].y == powerups[0].y) {
                         powerups.splice(i,1);
                         spawnPowerUP();
-                        addScore();
                         addLength();
                 }
         }
-        setImg();
+        //checking for snake overlapping
+        for (let i = 1; i < n; i++) {
+                if (snake[0].x == snake[i].x && snake[0].y == snake[i].y) {
+                        speed = 10000000000;
+                        snake[0].x = -1;
+                        snake[0].y = -1;
+                        alert("game over");
+                        location.reload();
+                        dead = 1;
+                }
+        }
+
+        //setting image for each point
+        setImage();
+        console.log(snake[0].x + " " + snake[0].y)
 }
 
-setInterval (physicsProcess,speed);
+if(!dead){
+        setInterval (physicsProcess, speed);
+}
