@@ -15,25 +15,20 @@ flex-direction: column;
     align-items: center;
      
       background-color: #1a1a1a;  
-      border: 2px solid;
+      box-shadow: 0 0 40px #00FF87;
       border-radius: 20px;
       padding: 30px 20px;
-      animation: borderColor 3s linear infinite;
+      
 }
 
-@keyframes borderColor {
-  0%   { border-color: #00ffff; }
-  25%  { border-color: #ff00ff; }
-  50%  { border-color: #ffd700; }
-  75%  { border-color: #ff4500; }
-  100% { border-color: #00ffff; }
- }
+
 
 #SNAKE{
-    color: green;
+    color: #39FF14;
+    text-shadow:0 0 30px #39FF14;
     font-size: 30px;    
-    font-weight: 1000;
-    letter-spacing: 3px;
+    font-weight: 800;
+    letter-spacing: 5px;
     font-family: 'Courier New', monospace;
   margin-bottom:30px;
   
@@ -60,25 +55,25 @@ flex-direction: column;
 }
 .dot {
     display: inline-block;
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     margin-right: 8px;
 }
 
 .dot.carrot {
     background: #FF9800;
-    box-shadow: 0 0 8px rgba(255, 152, 0, 0.5);
+    box-shadow: 0 0 30px #FF9800;
 }
 
 .dot.pumpkin {
     background: #FF5722;
-    box-shadow: 0 0 8px rgba(255, 87, 34, 0.5);
+    box-shadow: 0 0 30px #FF5722;
 }
 
 .dot.golden {
     background: #FFD700;
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+    box-shadow: 0 0 30px #FFD700;
 }
 .label{
   color: #555555;
@@ -141,6 +136,7 @@ flex-direction: column;
 .start-btn {
     padding: 12px 40px;
     background: #4CAF50;
+    box-shadow: 0 0 10px #39FF14;
     color: #fff;
     border: none;
     border-radius: 10px;
@@ -162,7 +158,6 @@ flex-direction: column;
     font-family: 'Verdana', sans-serif;
     margin-top: 10px;
 }
-
 
 
 
