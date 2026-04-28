@@ -6,6 +6,11 @@ body {
       height: 100vh;             
       margin: 0;  
 }  
+
+
+.hidden {
+        display: none;
+}
   
 #popup {
       width: 400px;
@@ -178,6 +183,11 @@ flex-direction: column;
       padding: 40px 20px;
       
 }
+
+#gameoverbox.hidden {
+        display: none;
+}
+
 #gameover{
     color: #FF073A;
     text-shadow:0 0 30px #FF073A;
@@ -208,6 +218,7 @@ flex-direction: column;
   margin-bottom: 30px;
 }
 #causeofdeath{
+  color: white;
   font-size: 13px;
   letter-spacing: 2px;
   font-weight:800;
@@ -238,7 +249,7 @@ flex-direction: column;
   font-weight: 100;
   margin-bottom: 10px;
 }
-#score{
+#endScore{
   color: #FFD700;
   font-size: 25px;
   font-weight: 1000;
@@ -281,69 +292,6 @@ flex-direction: column;
     background: #66BB6A;
 }
 
-
-
-
-
-
-
-
-
-#grid {
-        display: grid;
-        grid-template-columns: repeat(15,32px);
-        font-size: xx-large;
-}
-
-#grid img {
-        width: 32px;
-        height: 32px;
-}
-
-.backdrop {
-        color: black;
-}
-
-.snakeHead {
-        color: darkgreen;
-}
-
-.snake {
-        color: green;
-}
-
-.powerup {
-        color: red;
-}
-
-.snakeHeadDown {
-        transform: scaleY(-1);
-}
-
-.snakeHeadLeft {
-        transform: rotate(-90deg)
-}
-
-.snakeHeadRight {
-        transform: rotate(90deg);
-}
-
-.snakeHorizontal {
-        transform: rotate(90deg);
-}
-
-.snakeTurnTR {
-        transform: rotate(-90deg);
-}
-
-.snakeTurnTL {
-        transform: rotate(180deg);
-}
-
-.snakeTurnBR {
-        transform: rotate(0deg);
-}
-
-.snakeTurnBL {
-        transform: rotate(90deg);
+#score, #health {
+        color: white;
 }

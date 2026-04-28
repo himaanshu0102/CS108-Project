@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
         <head>
-                <link rel="stylesheet" href="/static/style.css">
+                <link rel="stylesheet" href="style.css">
         </head>
 
         <body>
-                
+
                 <div id='popup'>
                         <div id='SNAKE'>SNAKE</div>
                         <div id='foodbox'>
@@ -54,22 +54,20 @@
                                         <span class="keyword">&rarr;</span>
                                 </span>
                                 <span class="middle">to move</span>
-        
                         </div>
-      
                         <input type="text" id="Username" placeholder="Enter your First name">
                         <p class="error-msg" id="errorMsg">Please enter your name</p>
                         <button class="start-btn" id="startBtn">Start Game</button>
                 </div>
 
 
+                <p id="score" class="hidden">Score : 0</p>
+                <p id="health" class="hidden">Health : 3</p>
+                <div id="container">
+                        <canvas id="gameCanvas" class="hidden"></canvas>
+                </div>
 
-
-
-
-
-
-                <div id="gameoverbox">
+                <div id="gameoverbox" class="hidden">
                         <div id="gameover">GAME OVER</div>
                         <div id="line"></div>
                         <div id= "deathbox">
@@ -79,7 +77,7 @@
                         <div id="details">
                                 <span id="box">
                                         <div id="head">SCORE</div>
-                                        <div id="score"></div>
+                                        <div id="endScore"></div>
                                 </span>
                                 <span id="box">
                                         <div id="head">TIME</div>
@@ -94,11 +92,6 @@
                         <button class="play-again-btn" id="playagain">PLAY AGAIN</button>
                 </div>
                         
-      
-
-
-                
-                <canvas id="gameCanvas"></canvas>
-                <script src="static/engine.js"></script>
+                <script src="engine.js"></script>
         </body>
 </html>

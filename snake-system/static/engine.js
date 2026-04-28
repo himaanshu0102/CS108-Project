@@ -1,27 +1,26 @@
+//variable to check whether game has started or not
+let start = false;
+
+//start button, main page stuff
 let playerName = '';
 
 document.getElementById('startBtn').addEventListener('click', function() {
-    let name = document.getElementById('Username').value.trim();
-    if (name === '') {
-        document.getElementById('errorMsg').style.display = 'block';
-        document.getElementById('Username').style.borderColor = '#f44336';
-        return;
-    }
-    playerName = name.split(' ')[0];
-    document.getElementById('errorMsg').style.display = 'none';
-    document.getElementById('popup').style.display = 'none';
-    setInterval(physicsProcess, speed);
+        let name = document.getElementById('Username').value.trim();
+        if (name === '') {
+                document.getElementById('errorMsg').style.display = 'block';
+                document.getElementById('Username').style.borderColor = '#f44336';
+                return;
+        }
+        playerName = name.split(' ')[0];
+        document.getElementById('errorMsg').style.display = 'none';
+        document.getElementById('popup').style.display = 'none';
+        document.getElementById('score').classList.remove("hidden");
+        document.getElementById('health').classList.remove("hidden");
+        document.getElementById('gameCanvas').classList.remove("hidden");
+        start = true;
+        direction = RIGHT;
+        startGame();
 });
-
-
-
-
-
-
-
-
-
-
 
 const pi = Math.PI;
 
@@ -37,22 +36,31 @@ canvas.height = 640;
 
 //defining images
 const bg = new Image();
-bg.src = 'static/backtile2.png';
+bg.src = 'backtile2.png';
 
 const sHead = new Image();
-sHead.src = 'static/snakehead.png';
+sHead.src = 'snakehead.png';
 
 const sBod = new Image();
-sBod.src = 'static/snakebod.png';
+sBod.src = 'snakebod.png';
 
 const sCurve = new Image();
-sCurve.src = 'static/snakecurve.png';
+sCurve.src = 'snakeCurve.png';
 
 const sTail = new Image();
-sTail.src = 'static/snaketail.png';
+sTail.src = 'snaketail.png';
 
 const greenApple = new Image();
-greenApple.src = 'static/Apple.png';
+greenApple.src = 'Apple.png';
+
+const goldenApple = new Image();
+goldenApple.src = 'goldenApple.png';
+
+const cookie = new Image();
+cookie.src = 'cookie.png';
+
+const borders = new Image();
+borders.src = 'borders.png';
 
 //defining the Point class(used to store positions of snake parts and to define direction)
 //for the type variable, 0 = snake head, 1 = snake body, 2 = curve, 3 = tail, 10 = powerup 1
@@ -70,6 +78,11 @@ let snake = [p0]
 
 //setting a seperate variable for 
 let n=snake.length;
+
+//creating score variable
+score = 0;
+//creating health variable
+health = 3;
 
 //defining the directions wrt grid
 const RIGHT = new Point(1,0);
@@ -97,16 +110,16 @@ let downDelay = 0;
 //changing direction based on keyboard inputs. direction is assigned to newDirection instead of direction directly to prevent multiple direction changes in the same game tick
 window.addEventListener('keydown', (event) => {
 
-        if ((event.key === "d" || event.key === 'ArrowRight') && direction != LEFT) {
+        if ((event.key === "d" || event.key === 'ArrowRight') && direction != LEFT && start) {
                 nextDirection = RIGHT;
         }
-        if ((event.key === "a" || event.key === 'ArrowLeft') && direction != RIGHT) {
+        if ((event.key === "a" || event.key === 'ArrowLeft') && direction != RIGHT && start) {
                 nextDirection = LEFT;
         }
-        if ((event.key === "w" || event.key === 'ArrowUp') && direction != DOWN) {
+        if ((event.key === "w" || event.key === 'ArrowUp') && direction != DOWN && start) {
                 nextDirection = UP;
         }
-        if ((event.key === "s" || event.key === 'ArrowDown') && direction != UP) {
+        if ((event.key === "s" || event.key === 'ArrowDown') && direction != UP && start) {
                 nextDirection = DOWN;
         }
 
@@ -161,8 +174,6 @@ function setType(n) {
 
 //drawing images for all points of snake
 function setImage() {
-        console.log("snake:", JSON.stringify(snake));
-        console.log("n:", n);
         
         //setting snake body length
         for(let i = 1; i < n-1; i++){
@@ -242,7 +253,10 @@ function setImage() {
         for(let i = 0; i < k; i++) {
                 ctx.save();
                 ctx.translate(powerups[i].x * 32 + 16, powerups[i].y * 32 +16);
-                ctx.drawImage(greenApple, -16, -16);
+                if (powerups[i].type == 1) ctx.drawImage(greenApple, -16, -16);
+                else if (powerups[i].type == 2) ctx.drawImage(goldenApple, -16, -16);
+                else if (powerups[i].type == 3) ctx.drawImage(cookie, -16, -16);
+                
                 ctx.restore();
         }
 
@@ -282,11 +296,14 @@ let powerups = [];
 
 let dead = 0;
 
+//adding a countdown for the cookie powerup
+let cookieTime = 0;
+
 function spawnPowerUP() {
 
         let grid = [];
-        for (let x = 0; x < 15; x++) {
-                for (let y = 0; y < 20; y++){
+        for (let x = 1; x < 14; x++) {
+                for (let y = 1; y < 19; y++){
                         grid.push({x: x, y: y});
                 }
         }
@@ -304,11 +321,25 @@ function spawnPowerUP() {
         let xPower = rand.x;
         let yPower = rand.y;
 
-        powerups.push(new Point(xPower, yPower));
-        powerups[powerups.length-1].type = 10;
+        let rng = Math.random();
+        let type;
+        if (rng >0.4) type = 1;
+        else if (rng > 0.15) type = 2;
+        else if (rng <= 0.15 && cookieTime != 0) type = 2;
+        else type = 3;
+
+        powerups.push(new Point(xPower, yPower, type));
 }
 
 spawnPowerUP();
+
+function addScore() {
+        score++;
+        document.getElementById("score").innerText="Score : " + String(score);
+}
+
+//checking for collision with edge
+let colliding = false;
 
 function physicsProcess() {
         ctx.clearRect(0, 0, 480, 640);
@@ -337,89 +368,96 @@ function physicsProcess() {
 
         //checking for collision with powerup
         for (let i = powerups.length-1; i>=0; i--) {
-                if (snake[0].x == powerups[i].x && snake[0].y == powerups[0].y) {
+                if (snake[0].x == powerups[i].x && snake[0].y == powerups[i].y) {
+                        if (powerups[i].type == 1) {
+                                addLength();
+                                addScore();
+                        }
+
+                        else if (powerups[i].type == 2) {
+                                addLength();
+                                addLength();
+                                addLength();
+                                addScore();
+                                addScore();
+                                addScore();
+                        }
+
+                        else if (powerups[i].type == 3) {
+                                cookieTime = 10;
+                                cookieHit();
+                        }
                         powerups.splice(i,1);
                         spawnPowerUP();
-                        addLength();
+                        
                 }
         }
         //checking for snake overlapping
         for (let i = 1; i < n; i++) {
                 if (snake[0].x == snake[i].x && snake[0].y == snake[i].y) {
-                        speed = 10000000000;
-                        snake[0].x = -1;
-                        snake[0].y = -1;
-                        alert("game over");
-                        location.reload();
-                        dead = 1;
+                        die(0);
                 }
         }
 
+        //collision logic
+        if (((snake[0].x == 0 && direction != RIGHT) || (snake[0].x == 14 && direction != LEFT)) && cookieTime == 0 && !dead) {
+                if (!colliding) {
+                        health--;
+                        colliding = true;
+                        document.getElementById("health").innerText = "Health : " + String(health);
+                        console.log("hit");
+                        if (health == 0) die(1);
+                }
+        }
+        else {
+                colliding = false;
+        }
+
+
         //setting image for each point
         setImage();
-        console.log(snake[0].x + " " + snake[0].y)
+        ctx.save();
+        ctx.moveTo(0,0);
+        ctx.drawImage(borders, 0, 0);
+        ctx.restore();
+        console.log(cookieTime);
 }
 
-//if(!dead){
- //       setInterval (physicsProcess, speed);
-//}
-
-
-
-
-
-
-
-
-
-let username = playerName;
-let death = "WALL";
-let score = 10;
-let time = 2;
-let best = 0;
-if(score > best){
-  best = score;
+function cookieTimer() {
+        if (cookieTime>0) cookieTime--;
 }
-let wallLines = [
-    "The wall was not a door.",
-    "Walls: 1, You: 0",
-    "You hit a wall... literally.",
-    "The boundary wins again!",
-    "That wall came out of nowhere!",
-    "Splat! Wall collision!"
-];
-let selfLines = [
-    "You ate yourself. Tasty?",
-    "Self-destruction activated!",
-    "You became your own enemy.",
-    "Plot twist: the snake bites back."
-    
-];
-if(death === "WALL"){
-document.getElementById("line").innerHTML=wallLines[Math.floor(Math.random() * wallLines.length)];
-  document.getElementById("deathbox").style.borderColor="#00BFFF";
-  document.getElementById("causeofdeath").innerHTML="WALL COLLISION";
-  document.getElementById("causeofdeath").style.color="#00BFFF"
+
+function cookieHit() {
+        setInterval (cookieTimer, 1000);
 }
-else{
-  document.getElementById("line").innerHTML=selfLines[Math.floor(Math.random() * selfLines.length)];
-   document.getElementById("deathbox").style.borderColor="#DC143C";
-    document.getElementById("causeofdeath").innerHTML="SELF DEATH";
-document.getElementById("causeofdeath").style.color="#DC143C"
+
+
+
+function startGame() {
+        direction = RIGHT;
+        if(!dead && start){
+                setInterval (physicsProcess, speed);
+        }
 }
-document.getElementById("NAME").innerHTML=username;
-document.getElementById("score").innerHTML=score;
-document.getElementById("time").innerHTML=time;
-document.getElementById("best").innerHTML=best;
 
+function die(cause) {
+        dead = true;
+        start = false;
+        document.getElementById("gameCanvas").classList.add("hidden");
+        document.getElementById("gameoverbox").classList.remove("hidden");
+        document.getElementById("score").classList.add("hidden");
+        document.getElementById("health").classList.remove("hidden");
+        document.getElementById("endScore").innerText = score;
+        if (cause == 0) {
+                document.getElementById("causeofdeath").innerText = "Snake overlap";
+        }
+        else {
+                document.getElementById("causeofdeath").innerText = "Ran into barrier";
+        }
+}
 
-let now = new Date();
-
-let timestamp = now.getFullYear() + '-' +
-    String(now.getMonth() + 1).padStart(2, '0') + '-' +
-    String(now.getDate()).padStart(2, '0') + ' ' +
-    String(now.getHours()).padStart(2, '0') + ':' +
-    String(now.getMinutes()).padStart(2, '0') + ':' +
-    String(now.getSeconds()).padStart(2, '0');
-
-document.getElementById("timestamp").innerHTML= timestamp;
+document.getElementById("playagain").addEventListener('click', function () {
+        if (dead) {
+                location.reload()
+        }
+});
