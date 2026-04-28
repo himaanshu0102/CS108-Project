@@ -13,14 +13,7 @@ document.getElementById('startBtn').addEventListener('click', function() {
     setInterval(physicsProcess, speed);
 });
 
-document.getElementById('Username').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        document.getElementById('startBtn').click();
-    }
-    if (e.key === ' ') {
-        e.preventDefault();
-    }
-});
+
 
 
 
@@ -370,3 +363,63 @@ function physicsProcess() {
 //if(!dead){
  //       setInterval (physicsProcess, speed);
 //}
+
+
+
+
+
+
+
+
+
+let username = playerName;
+let death = "WALL";
+let score = 10;
+let time = 2;
+let best = 0;
+if(score > best){
+  best = score;
+}
+let wallLines = [
+    "The wall was not a door.",
+    "Walls: 1, You: 0",
+    "You hit a wall... literally.",
+    "The boundary wins again!",
+    "That wall came out of nowhere!",
+    "Splat! Wall collision!"
+];
+let selfLines = [
+    "You ate yourself. Tasty?",
+    "Self-destruction activated!",
+    "You became your own enemy.",
+    "Plot twist: the snake bites back."
+    
+];
+if(death === "WALL"){
+document.getElementById("line").innerHTML=wallLines[Math.floor(Math.random() * wallLines.length)];
+  document.getElementById("deathbox").style.borderColor="#00BFFF";
+  document.getElementById("causeofdeath").innerHTML="WALL COLLISION";
+  document.getElementById("causeofdeath").style.color="#00BFFF"
+}
+else{
+  document.getElementById("line").innerHTML=selfLines[Math.floor(Math.random() * selfLines.length)];
+   document.getElementById("deathbox").style.borderColor="#DC143C";
+    document.getElementById("causeofdeath").innerHTML="SELF DEATH";
+document.getElementById("causeofdeath").style.color="#DC143C"
+}
+document.getElementById("NAME").innerHTML=username;
+document.getElementById("score").innerHTML=score;
+document.getElementById("time").innerHTML=time;
+document.getElementById("best").innerHTML=best;
+
+
+let now = new Date();
+
+let timestamp = now.getFullYear() + '-' +
+    String(now.getMonth() + 1).padStart(2, '0') + '-' +
+    String(now.getDate()).padStart(2, '0') + ' ' +
+    String(now.getHours()).padStart(2, '0') + ':' +
+    String(now.getMinutes()).padStart(2, '0') + ':' +
+    String(now.getSeconds()).padStart(2, '0');
+
+document.getElementById("timestamp").innerHTML= timestamp;

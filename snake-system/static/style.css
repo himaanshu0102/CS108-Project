@@ -165,6 +165,129 @@ flex-direction: column;
 
 
 
+#gameoverbox {
+      width: 400px;
+      height: 400px;
+      display: flex;
+flex-direction: column;
+    align-items: center;
+     
+      background-color: #1a1a1a;  
+      box-shadow: 0 0 40px #FF073A;
+      border-radius: 20px;
+      padding: 40px 20px;
+      
+}
+#gameover{
+    color: #FF073A;
+    text-shadow:0 0 30px #FF073A;
+    font-size: 30px;    
+    font-weight: 800;
+    letter-spacing: 5px;
+    font-family: 'Courier New', monospace;
+  margin-bottom:30px;
+  
+}
+#line{
+  color: grey;
+    font-size: 12px;
+    font-family: 'Verdana', sans-serif;
+    letter-spacing: 2px;
+  font-weight: 100;
+  margin-bottom: 30px;
+}
+#deathbox{
+  width: 150px;
+  height: 30px;
+  display: flex;
+  flex-direction:column;
+  align-items: center;
+  border: 2px solid blue;
+  border-radius:20px;
+  background-color:#1a1a1a;
+  margin-bottom: 30px;
+}
+#causeofdeath{
+  font-size: 13px;
+  letter-spacing: 2px;
+  font-weight:800;
+  margin-top: 7px;
+  font-family: 'Courier New', monospace;
+}
+#NAME{
+   color: #39FF14;
+    text-shadow:0 0 30px #39FF14;
+    font-size: 20px;    
+    font-weight: 800;
+    letter-spacing: 5px;
+    font-family: 'Courier New', monospace;
+  margin-bottom:30px;
+}
+#details{
+  display:flex;
+  gap: 70px;
+}
+#box{
+  text-align:center;
+}
+#head{
+  color: grey;
+    font-size: 10px;
+    font-family: 'Verdana', sans-serif;
+    letter-spacing: 2px;
+  font-weight: 100;
+  margin-bottom: 10px;
+}
+#score{
+  color: #FFD700;
+  font-size: 25px;
+  font-weight: 1000;
+}
+#time{
+  color: #8892B0;
+  font-size: 25px;
+  font-weight: 1000;
+}
+#best{
+  color: #4CAF50;
+  font-size: 25px;
+  font-weight: 1000;
+}
+#timestamp{
+  margin-top:30px;
+  color: grey;
+    font-size: 10px;
+    font-family: 'Verdana', sans-serif;
+    letter-spacing: 2px;
+  font-weight: 100;
+  margin-bottom: 30px;
+}
+#playagain {
+    padding: 12px 40px;
+    background: #4CAF50;
+    box-shadow: 0 0 10px #39FF14;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top:10px;
+}
+
+#playagain:hover {
+    background: #66BB6A;
+}
+
+
+
+
+
+
+
+
 
 #grid {
         display: grid;
