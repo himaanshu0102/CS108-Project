@@ -7,6 +7,7 @@ let playerName = '';
 //defining variable for speed reference
 let refSpeed;
 
+//listening for main menu button click
 document.getElementById('startBtn').addEventListener('click', function() {
         let name = document.getElementById('Username').value.trim();
         if (name === '') {
@@ -108,6 +109,7 @@ const LEFT = new Point(-1,0)
 const UP = new Point(0,1);
 const DOWN = new Point(0,-1);
 
+//defining next direction variable. this ensures multiple inputs dont happen within one game tick. next direction makes sure that the latest inpuut before the next game tick is the one which actually gets implemented.
 let direction = RIGHT;
 let nextDirection = RIGHT;
 
@@ -184,6 +186,7 @@ function moveDown() {
         }
 }
 
+//making a function to check whether a part of the snake is straight or curved or if its the end. type 0 is the head. type 1 is the straight parts. type 2 is a curve part. type 3 is the end of the snake.
 function setType(n) {
         snake[0].type = 0;
         for (let i = 1; i < n-1; i++) {
@@ -315,8 +318,10 @@ addLength();
 addLength();
 addLength();
 
+//array for the coordinates of powerups.
 let powerups = [];
 
+//variable to see if player is dead or not.
 let dead = 0;
 
 //adding a countdown for the cookie powerup
@@ -325,8 +330,10 @@ let cookieTime = 0;
 //adding a countdown for lightning powerup
 let lightningTime = 0;
 
+//function which spawns a powerup when called
 function spawnPowerUP() {
 
+        //making a grid with all the possible coordinates for powerup to spawn at. when initialized, all positions currently occupied by snake are eliminated and a random position is picked from the remaining elements to spawn the powerup at.
         let grid = [];
         for (let x = 1; x < 14; x++) {
                 for (let y = 1; y < 19; y++){
@@ -347,6 +354,7 @@ function spawnPowerUP() {
         let xPower = rand.x;
         let yPower = rand.y;
 
+        //then a random number from 0 to 1, acting as a probability check is generated. based on whether it is above or below certain values, a particular powerup is spawned. type 1>green apple, 2>golden apple, 3>cookie, 4>lightning
         let rng = Math.random();
         let type;
         if (rng >0.4) type = 1;
@@ -362,6 +370,7 @@ function spawnPowerUP() {
 
 spawnPowerUP();
 
+//function to change text in game screen
 function addScore() {
         score++;
         document.getElementById("score").innerText="Score : " + String(score);
@@ -370,6 +379,7 @@ function addScore() {
 //checking for collision with edge
 let colliding = false;
 
+//the main looping function. repeats every tick
 function physicsProcess() {
         ctx.clearRect(0, 0, 480, 640);
         ctx.drawImage(bg, 0, 0, 480, 640)
@@ -395,7 +405,7 @@ function physicsProcess() {
         //setting type variable for each point of the snake so that engine knows which image to assign. done after movement to make sure images are according to current state of game
         setType(n);
 
-        //checking for collision with powerup
+        //checking for collision with powerup by checking if snake head is currently colliding with any of the existing powerups.
         for (let i = powerups.length-1; i>=0; i--) {
                 if (snake[0].x == powerups[i].x && snake[0].y == powerups[i].y) {
                         if (powerups[i].type == 1) {
@@ -426,14 +436,14 @@ function physicsProcess() {
                         
                 }
         }
-        //checking for snake overlapping
+        //checking for snake overlapping by checking if snake head is overlapping with any other part of the snake
         for (let i = 1; i < n; i++) {
                 if (snake[0].x == snake[i].x && snake[0].y == snake[i].y) {
                         die(0);
                 }
         }
 
-        //collision logic
+        //collision logic by checking if snake head is at edge of the grid. the directional checks are to ensure that condition is triggered only while entering an edge and not exiting it from the other side
         if (((snake[0].x == 0 && direction != RIGHT) || (snake[0].x == 14 && direction != LEFT)) && cookieTime == 0 && !dead) {
                 if (!colliding) {
                         health--;
@@ -443,6 +453,7 @@ function physicsProcess() {
                         if (health == 0) die(1);
                 }
         }
+        //the colliding variable ensures that health is detucted only once and not for every tick that the snake head is at the edge
         else {
                 colliding = false;
         }
@@ -473,18 +484,19 @@ function physicsProcess() {
         }
 }
 
+//defining intervals for each repeating function
 let cookieInterval = null;
-let lightningInterval = null;
 
+//defining a function to increment cookie time by -1 to check how long the cookie powerup has been active. once it hits zero, the interval is cleared and set to null.
 function cookieTimer() {
         if (cookieTime>0) cookieTime--;
         if (cookieTime == 0) {
                 clearInterval(cookieInterval);
                 cookieInterval = null;
         }
-        console.log(cookieTime)
 }
 
+//the function which is called when a cookie is hit. it initiates the cookie interval which repeats the cookie timer function.
 function cookieHit() {
         
         if (cookieInterval !== null) {
@@ -494,38 +506,48 @@ function cookieHit() {
         cookieInterval = setInterval (cookieTimer, 1000);
 }
 
+//the game interval and lightning interval for repeating game loop and lightning timer loop 
 let gameInterval = null;
+let lightningInterval = null;
 
+//this function increments lightning time by -1 which counts down how long lightning powerup has been active
 function lightningTimer() {
         if (lightningTime>0) lightningTime--;
         if (lightningTime == 0) {
                 clearInterval(lightningInterval);
                 lightningInterval = null;
+                //gameInterval is cleared and restarted with normal speed when time runs out
                 clearInterval(gameInterval);
                 gameInterval = setInterval(physicsProcess, refSpeed)
         }
-        console.log(lightningTime)
 }
 
+//function which is called when lightning powerup is hit
 function lightningHit() {
         if (lightningInterval !== null) {
                 clearInterval(lightningInterval);
                 lightningInterval = null;
         }
         lightningInterval = setInterval (lightningTimer, 1000);
+        //gameInterval is cleared and restarted with half of normal speed
         clearInterval(gameInterval);
         gameInterval = setInterval(physicsProcess, refSpeed*2);
 }
 
+//function which increments time by one.
 function timeIncrease() {
         time++;
         document.getElementById("gameTime").innerText = "Time: " + time;
 }
 
+//interval for repeating time function
 let timeInterval = null;
 
+//function to start the game
 function startGame() {
-        direction = RIGHT;
+        //direction is initialized
+        nextDirection = RIGHT;
+        direction = right;
         if(!dead && start){
 
                 if (gameInterval !== null) {
@@ -536,6 +558,7 @@ function startGame() {
                         clearInterval(timeInterval);
                 }
 
+                //sets the interval to start game loop and time measurement
                 gameInterval = setInterval (physicsProcess, speed);
                 timeInterval = setInterval (timeIncrease, 1000);
         }
@@ -544,15 +567,19 @@ function startGame() {
         }
 }
 
+//function tot handle death. if player dies via snake eating itself, cause = 0. instead if player dies due to too many wall collisions, cause = 1
 function die(cause) {
         dead = true;
         start = false;
         cookieTime = 0;
 
+        //handles best score
         let best =0;
         if(score > best){
                 best = score;
         }
+
+        //creates death messages and choses random one from corresponding Lines variable to be displayed
         let wallLines = [
                 "The wall was not a door.",
                 "Walls: 1, You: 0",
@@ -568,7 +595,7 @@ function die(cause) {
                 "Plot twist: the snake bites back."
                 ]
 
-
+        //hides the necessary tags in html via adding the hidden class to it
         document.getElementById("gameCanvas").classList.add("hidden");
         document.getElementById("gameoverbox").classList.remove("hidden");
         document.getElementById("score").classList.add("hidden");
@@ -581,6 +608,7 @@ function die(cause) {
         document.getElementById("NAME").innerHTML=playerName;
         document.getElementById("best").innerHTML=best;
 
+        //defining and setting value for date
         let now = new Date();
 
         let timestamp = now.getFullYear() + '-' +
@@ -612,6 +640,7 @@ function die(cause) {
         })
     });
 
+        //stops looping of time, game and powerup related setIntervals
         if (gameInterval !== null) {
                 clearInterval(gameInterval);
                 gameInterval=null;
@@ -627,6 +656,12 @@ function die(cause) {
                 timeInterval=null;
         }
 
+        if (lightningInterval !== null) {
+                clearInterval(lightningInterval);
+                lightningInterval=null;
+        }
+
+        //handles death messages
         if (cause == 0) {
                 document.getElementById("line").innerHTML=selfLines[Math.floor(Math.random() * selfLines.length)];
                 document.getElementById("deathbox").style.borderColor="#DC143C";
@@ -643,14 +678,16 @@ function die(cause) {
         console.log(time);
 }
 
+//when player hits the restart button, reset function is called
 document.getElementById("playagain").addEventListener('click', function () {
         if (dead) {
                 reset();
         }
 });
 
-
+//function to restart game
 function reset() {
+        //resetting all variables and text in html file
         score = 0;
         health = 3;
         cookieTime = 0;
@@ -658,6 +695,7 @@ function reset() {
 
         document.getElementById("score").innerText = "Score: 0";
 
+        //resetting the snake aarray and direction
         snake.splice(0,snake.length);
 
         let p0 = new Point(0,0,0);
@@ -670,6 +708,7 @@ function reset() {
         let rpoint = new Point(1,0);
         nextDirection = RIGHT;
 
+        //hiding and unhinding necessaryy tags
         document.getElementById("gameCanvas").classList.remove("hidden");
         document.getElementById("gameoverbox").classList.add("hidden");
         document.getElementById("score").classList.remove("hidden");
