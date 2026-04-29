@@ -58,7 +58,7 @@ flex-direction: column;
 
 #foodbox{
     width: 300px;
-    height: 110px;
+    height: 130px;
     background-color: #000000;
     border:1px solid;
     border-radius: 20px;
@@ -97,6 +97,12 @@ flex-direction: column;
     background: brown;
     box-shadow: 0 0 30px brown;
 }
+
+.dot.blue {
+    background: lightblue;
+    box-shadow: 0 0 30px lightblue;
+}
+
 .label{
   color: #555555;
   font-size: 12px;
@@ -366,6 +372,10 @@ flex-direction: column;
 
 #ediff {
     color: yellowgreen;
+    font-family: 'Verdana', sans-serif;
+}
+#mdiff {
+    color: yellow;
     font-family: 'Verdana', sans-serif;
 }
 #hdiff {
