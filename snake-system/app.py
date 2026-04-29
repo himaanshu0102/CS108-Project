@@ -15,7 +15,7 @@ def save_score():
     score=data.get('score') 
     cause=data.get('cause')
     duration=data.get('duration')
-    timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    timestamp=data.get('timestamp')
 
     if not name or score is None or cause not in ["WALL", "SELF"] or duration is None:
         return jsonify({"error": "Invalid data"}), 400
