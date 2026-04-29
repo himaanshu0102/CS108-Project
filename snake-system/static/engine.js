@@ -447,6 +447,11 @@ let cookieInterval = null;
 
 function cookieTimer() {
         if (cookieTime>0) cookieTime--;
+        if (cookieTime == 0) {
+                clearInterval(cookieInterval);
+                cookieInterval = null;
+        }
+        console.log(cookieTime)
 }
 
 function cookieHit() {
@@ -537,9 +542,9 @@ function die(cause) {
                 gameInterval=null;
         }
 
-        if (cookieTimer !== null) {
-                clearInterval(cookieTimer);
-                cookieTimer = null;
+        if (cookieInterval !== null) {
+                clearInterval(cookieInterval);
+                cookieInterval = null;
         }
 
         if (timeInterval !== null) {
