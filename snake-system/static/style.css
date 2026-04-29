@@ -270,16 +270,19 @@ flex-direction: column;
   color: #FFD700;
   font-size: 25px;
   font-weight: 1000;
+  font-family: 'Verdana', sans-serif;
 }
 #time{
   color: #8892B0;
   font-size: 25px;
   font-weight: 1000;
+  font-family: 'Verdana', sans-serif;
 }
 #best{
   color: #4CAF50;
   font-size: 25px;
   font-weight: 1000;
+  font-family: 'Verdana', sans-serif;
 }
 #timestamp{
   margin-top:30px;
@@ -353,4 +356,27 @@ flex-direction: column;
     font-family: 'Courier New', monospace;
     font-size: 18px;
     text-shadow: 0 0 6px #39FF14;
+}
+
+.sliderLabels {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+#ediff {
+    color: yellowgreen;
+    font-family: 'Verdana', sans-serif;
+}
+#hdiff {
+    color: orange;
+    font-family: 'Verdana', sans-serif;
+}
+#idiff {
+    color: red;
+    font-family: 'Verdana', sans-serif;
+}
+
+input[type="range"] {
+    width: 100%;
 }
