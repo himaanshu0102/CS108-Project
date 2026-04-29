@@ -551,6 +551,27 @@ function die(cause) {
 
         document.getElementById("timestamp").innerHTML= timestamp;
 
+
+//sending score data to server to be stored in database and displayed on history.txt
+        let deathCause = '';
+                if (cause == 0) {
+                        deathCause = 'SELF';
+                } else {
+                        deathCause = 'WALL';
+                }
+
+                fetch('/save_score', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                        name: playerName,
+                        score: score,
+                        cause: deathCause,
+                        duration: time,
+                        timestamp: timestamp
+        })
+    });
+
         if (gameInterval !== null) {
                 clearInterval(gameInterval);
                 gameInterval=null;
