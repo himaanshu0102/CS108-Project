@@ -17,6 +17,7 @@ document.getElementById('startBtn').addEventListener('click', function() {
         document.getElementById('score').classList.remove("hidden");
         document.getElementById('health').classList.remove("hidden");
         document.getElementById('gameCanvas').classList.remove("hidden");
+        document.getElementById('gameTime').classList.remove("hidden");
         start = true;
         direction = RIGHT;
         startGame();
@@ -36,31 +37,31 @@ canvas.height = 640;
 
 //defining images
 const bg = new Image();
-bg.src = 'static/backtile2.png';
+bg.src = 'backtile2.png';
 
 const sHead = new Image();
-sHead.src = 'static/snakehead.png';
+sHead.src = 'snakehead.png';
 
 const sBod = new Image();
-sBod.src = 'static/snakebod.png';
+sBod.src = 'snakebod.png';
 
 const sCurve = new Image();
-sCurve.src = 'static/snakeCurve.png';
+sCurve.src = 'snakeCurve.png';
 
 const sTail = new Image();
-sTail.src = 'static/snaketail.png';
+sTail.src = 'snaketail.png';
 
 const greenApple = new Image();
-greenApple.src = 'static/Apple.png';
+greenApple.src = 'Apple.png';
 
 const goldenApple = new Image();
-goldenApple.src = 'static/goldenApple.png';
+goldenApple.src = 'goldenApple.png';
 
 const cookie = new Image();
-cookie.src = 'static/cookie.png';
+cookie.src = 'cookie.png';
 
 const borders = new Image();
-borders.src = 'static/borders.png';
+borders.src = 'borders.png';
 
 //defining the Point class(used to store positions of snake parts and to define direction)
 //for the type variable, 0 = snake head, 1 = snake body, 2 = curve, 3 = tail, 10 = powerup 1
@@ -83,9 +84,6 @@ let n=snake.length;
 score = 0;
 //creating health variable
 health = 3;
-
-
-
 
 //defining the directions wrt grid
 const RIGHT = new Point(1,0);
@@ -110,19 +108,22 @@ let rightDelay = 0;
 let upDelay = 0;
 let downDelay = 0;
 
+//playtime variable
+time = 0;
+
 //changing direction based on keyboard inputs. direction is assigned to newDirection instead of direction directly to prevent multiple direction changes in the same game tick
 window.addEventListener('keydown', (event) => {
 
-        if ((event.key === "d" || event.key === 'ArrowRight') && direction != LEFT && start) {
+        if ((event.key === "d" || event.key === 'ArrowRight') && direction != LEFT && start && !dead) {
                 nextDirection = RIGHT;
         }
-        if ((event.key === "a" || event.key === 'ArrowLeft') && direction != RIGHT && start) {
+        if ((event.key === "a" || event.key === 'ArrowLeft') && direction != RIGHT && start && !dead) {
                 nextDirection = LEFT;
         }
-        if ((event.key === "w" || event.key === 'ArrowUp') && direction != DOWN && start) {
+        if ((event.key === "w" || event.key === 'ArrowUp') && direction != DOWN && start && !dead) {
                 nextDirection = UP;
         }
-        if ((event.key === "s" || event.key === 'ArrowDown') && direction != UP && start) {
+        if ((event.key === "s" || event.key === 'ArrowDown') && direction != UP && start && !dead) {
                 nextDirection = DOWN;
         }
 
@@ -423,31 +424,73 @@ function physicsProcess() {
         ctx.moveTo(0,0);
         ctx.drawImage(borders, 0, 0);
         ctx.restore();
-        console.log(cookieTime);
+
+        //making cookie invincibilty visible when it is non zero
+        if (cookieTime != 0) {
+                if (document.getElementById("cookieTime").classList.contains("hidden") && !dead) {
+                        document.getElementById("cookieTime").classList.remove("hidden");
+                }
+                document.getElementById("cookieTime").innerText = "Barrier immunity: " + String(cookieTime);
+        }
+        else {
+                if (!document.getElementById("cookieTime").classList.contains("hidden") || dead) {
+                        document.getElementById("cookieTime").classList.add("hidden");
+                }
+        }
+
+        if (!document.getElementById("cookieTime").classList.contains("hidden") && dead) {
+                        document.getElementById("cookieTime").classList.add("hidden");
+        }
 }
+
+let cookieInterval = null;
 
 function cookieTimer() {
         if (cookieTime>0) cookieTime--;
 }
 
 function cookieHit() {
-        setInterval (cookieTimer, 1000);
+        
+        if (cookieInterval !== null) {
+                clearInterval(cookieInterval);
+                cookieInterval = null;
+        }
+        cookieInterval = setInterval (cookieTimer, 1000);
 }
 
+function timeIncrease() {
+        time++;
+        document.getElementById("gameTime").innerText = "Time: " + time;
+}
 
+let gameInterval = null;
+let timeInterval = null;
 
 function startGame() {
         direction = RIGHT;
         if(!dead && start){
-                setInterval (physicsProcess, speed);
+
+                if (gameInterval !== null) {
+                        clearInterval(gameInterval);
+                }
+
+                if (timeInterval !== null) {
+                        clearInterval(timeInterval);
+                }
+
+                gameInterval = setInterval (physicsProcess, speed);
+                timeInterval = setInterval (timeIncrease, 1000);
+        }
+        else {
+
         }
 }
-function stopTimer() {
-    clearInterval(timerInterval);
-}
+
 function die(cause) {
         dead = true;
         start = false;
+        cookieTime = 0;
+
         let best =0;
         if(score > best){
                 best = score;
@@ -466,14 +509,17 @@ function die(cause) {
                 "You became your own enemy.",
                 "Plot twist: the snake bites back."
                 ]
+
+
         document.getElementById("gameCanvas").classList.add("hidden");
         document.getElementById("gameoverbox").classList.remove("hidden");
         document.getElementById("score").classList.add("hidden");
-        document.getElementById("health").classList.remove("hidden");
+        document.getElementById("health").classList.add("hidden");
+        document.getElementById('gameTime').classList.add("hidden");
         document.getElementById("endScore").innerText = score;
+        document.getElementById("time").innerText = String(time) + "s";
         document.getElementById("NAME").innerHTML=playerName;
         document.getElementById("best").innerHTML=best;
-
 
         let now = new Date();
 
@@ -484,23 +530,75 @@ function die(cause) {
                 String(now.getMinutes()).padStart(2, '0') + ':' +
                 String(now.getSeconds()).padStart(2, '0');
 
-document.getElementById("timestamp").innerHTML= timestamp;
+        document.getElementById("timestamp").innerHTML= timestamp;
+
+        if (gameInterval !== null) {
+                clearInterval(gameInterval);
+                gameInterval=null;
+        }
+
+        if (cookieTimer !== null) {
+                clearInterval(cookieTimer);
+                cookieTimer = null;
+        }
+
+        if (timeInterval !== null) {
+                clearInterval(timeInterval);
+                timeInterval=null;
+        }
 
         if (cause == 0) {
                 document.getElementById("line").innerHTML=selfLines[Math.floor(Math.random() * selfLines.length)];
                 document.getElementById("deathbox").style.borderColor="#DC143C";
                 document.getElementById("causeofdeath").innerHTML="SELF DEATH";
-                document.getElementById("causeofdeath").style.color="#DC143C"        }
+                document.getElementById("causeofdeath").style.color="#DC143C";
+        }
         else {
                 document.getElementById("line").innerHTML=wallLines[Math.floor(Math.random() * wallLines.length)];
                 document.getElementById("deathbox").style.borderColor="#00BFFF";
                 document.getElementById("causeofdeath").innerHTML="WALL COLLISION";
-                document.getElementById("causeofdeath").style.color="#00BFFF"        }
-        
+                document.getElementById("causeofdeath").style.color="#00BFFF";
+        }
+
+        console.log(time);
 }
 
 document.getElementById("playagain").addEventListener('click', function () {
         if (dead) {
-                location.reload()
+                reset();
         }
 });
+
+
+function reset() {
+        score = 0;
+        health = 3;
+        cookieTime = 0;
+        time = 0;
+
+        document.getElementById("score").innerText = "Score: 0";
+        document.getElementById("health").innerText = "Health: 3";
+
+        snake.splice(0,snake.length);
+
+        let p0 = new Point(0,0,0);
+        snake = [p0];
+
+        addLength();
+        addLength();
+        addLength();
+
+        let rpoint = new Point(1,0);
+        nextDirection = RIGHT;
+
+        document.getElementById("gameCanvas").classList.remove("hidden");
+        document.getElementById("gameoverbox").classList.add("hidden");
+        document.getElementById("score").classList.remove("hidden");
+        document.getElementById("health").classList.remove("hidden");
+        document.getElementById('gameTime').classList.remove("hidden");
+
+        start = true;
+        dead = false;
+
+        startGame();
+}
