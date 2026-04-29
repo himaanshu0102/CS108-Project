@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
         <head>
-                <link rel="stylesheet" href="/static/style.css">
+                <link rel="stylesheet" href="style.css">
         </head>
 
         <body>
@@ -60,12 +60,18 @@
                         <button class="start-btn" id="startBtn">Start Game</button>
                 </div>
 
-
-                <p id="score" class="hidden">Score : 0</p>
-                <p id="health" class="hidden">Health : 3</p>
-                <div id="container">
-                        <canvas id="gameCanvas" class="hidden"></canvas>
+                <div id="gameWrap">
+                        <div id="gameTime" class="hidden">Time: 0</div>
+                        <div id="stats">
+                                <span id="score" class="hidden">Score: 0</span>
+                                <span id="health" class="hidden">Health: 3</span>
+                                <span id="cookieTime" class="hidden">Barrier immunity: </span>
+                        </div>
+                        <div id="container">
+                                <canvas id="gameCanvas" class="hidden"></canvas>
+                        </div>
                 </div>
+                
 
                 <div id="gameoverbox" class="hidden">
                         <div id="gameover">GAME OVER</div>
@@ -92,6 +98,6 @@
                         <button class="play-again-btn" id="playagain">PLAY AGAIN</button>
                 </div>
                         
-                <script src="/static/engine.js"></script>
+                <script src="engine.js"></script>
         </body>
 </html>
