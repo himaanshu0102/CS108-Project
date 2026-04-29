@@ -36,31 +36,31 @@ canvas.height = 640;
 
 //defining images
 const bg = new Image();
-bg.src = 'backtile2.png';
+bg.src = 'static/backtile2.png';
 
 const sHead = new Image();
-sHead.src = 'snakehead.png';
+sHead.src = 'static/snakehead.png';
 
 const sBod = new Image();
-sBod.src = 'snakebod.png';
+sBod.src = 'static/snakebod.png';
 
 const sCurve = new Image();
-sCurve.src = 'snakeCurve.png';
+sCurve.src = 'static/snakeCurve.png';
 
 const sTail = new Image();
-sTail.src = 'snaketail.png';
+sTail.src = 'static/snaketail.png';
 
 const greenApple = new Image();
-greenApple.src = 'Apple.png';
+greenApple.src = 'static/Apple.png';
 
 const goldenApple = new Image();
-goldenApple.src = 'goldenApple.png';
+goldenApple.src = 'static/goldenApple.png';
 
 const cookie = new Image();
-cookie.src = 'cookie.png';
+cookie.src = 'static/cookie.png';
 
 const borders = new Image();
-borders.src = 'borders.png';
+borders.src = 'static/borders.png';
 
 //defining the Point class(used to store positions of snake parts and to define direction)
 //for the type variable, 0 = snake head, 1 = snake body, 2 = curve, 3 = tail, 10 = powerup 1
@@ -83,6 +83,9 @@ let n=snake.length;
 score = 0;
 //creating health variable
 health = 3;
+
+
+
 
 //defining the directions wrt grid
 const RIGHT = new Point(1,0);
@@ -439,21 +442,61 @@ function startGame() {
                 setInterval (physicsProcess, speed);
         }
 }
-
+function stopTimer() {
+    clearInterval(timerInterval);
+}
 function die(cause) {
         dead = true;
         start = false;
+        let best =0;
+        if(score > best){
+                best = score;
+        }
+        let wallLines = [
+                "The wall was not a door.",
+                "Walls: 1, You: 0",
+                "You hit a wall... literally.",
+                "The boundary wins again!",
+                "That wall came out of nowhere!",
+                "Splat! Wall collision!"
+                ];
+        let selfLines = [
+                "You ate yourself. Tasty?",
+                "Self-destruction activated!",
+                "You became your own enemy.",
+                "Plot twist: the snake bites back."
+                ]
         document.getElementById("gameCanvas").classList.add("hidden");
         document.getElementById("gameoverbox").classList.remove("hidden");
         document.getElementById("score").classList.add("hidden");
         document.getElementById("health").classList.remove("hidden");
         document.getElementById("endScore").innerText = score;
+        document.getElementById("NAME").innerHTML=playerName;
+        document.getElementById("best").innerHTML=best;
+
+
+        let now = new Date();
+
+        let timestamp = now.getFullYear() + '-' +
+                String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                String(now.getDate()).padStart(2, '0') + ' ' +
+                String(now.getHours()).padStart(2, '0') + ':' +
+                String(now.getMinutes()).padStart(2, '0') + ':' +
+                String(now.getSeconds()).padStart(2, '0');
+
+document.getElementById("timestamp").innerHTML= timestamp;
+
         if (cause == 0) {
-                document.getElementById("causeofdeath").innerText = "Snake overlap";
-        }
+                document.getElementById("line").innerHTML=selfLines[Math.floor(Math.random() * selfLines.length)];
+                document.getElementById("deathbox").style.borderColor="#DC143C";
+                document.getElementById("causeofdeath").innerHTML="SELF DEATH";
+                document.getElementById("causeofdeath").style.color="#DC143C"        }
         else {
-                document.getElementById("causeofdeath").innerText = "Ran into barrier";
-        }
+                document.getElementById("line").innerHTML=wallLines[Math.floor(Math.random() * wallLines.length)];
+                document.getElementById("deathbox").style.borderColor="#00BFFF";
+                document.getElementById("causeofdeath").innerHTML="WALL COLLISION";
+                document.getElementById("causeofdeath").style.color="#00BFFF"        }
+        
 }
 
 document.getElementById("playagain").addEventListener('click', function () {
