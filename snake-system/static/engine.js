@@ -547,7 +547,7 @@ let timeInterval = null;
 function startGame() {
         //direction is initialized
         nextDirection = RIGHT;
-        direction = right;
+        direction = RIGHT;
         if(!dead && start){
 
                 if (gameInterval !== null) {
