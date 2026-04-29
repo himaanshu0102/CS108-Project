@@ -3,6 +3,7 @@ let start = false;
 
 //start button, main page stuff
 let playerName = '';
+let best = 0;
 
 document.getElementById('startBtn').addEventListener('click', function() {
         let name = document.getElementById('Username').value.trim();
@@ -29,7 +30,7 @@ document.getElementById('startBtn').addEventListener('click', function() {
         else if (difficulty == 2) speed = 100;
         else speed = 50;
         console.log(speed);
-
+        
         startGame();
 });
 
@@ -507,7 +508,7 @@ function die(cause) {
         start = false;
         cookieTime = 0;
 
-        let best =0;
+        
         if(score > best){
                 best = score;
         }
