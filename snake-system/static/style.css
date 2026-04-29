@@ -84,18 +84,18 @@ flex-direction: column;
 }
 
 .dot.carrot {
-    background: #FF9800;
-    box-shadow: 0 0 30px #FF9800;
+    background: green;
+    box-shadow: 0 0 30px green;
 }
 
 .dot.pumpkin {
-    background: #FF5722;
-    box-shadow: 0 0 30px #FF5722;
+    background: gold;
+    box-shadow: 0 0 30px gold;
 }
 
 .dot.golden {
-    background: #FFD700;
-    box-shadow: 0 0 30px #FFD700;
+    background: brown;
+    box-shadow: 0 0 30px brown;
 }
 .label{
   color: #555555;
