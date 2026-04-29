@@ -15,9 +15,11 @@ document.getElementById('startBtn').addEventListener('click', function() {
         document.getElementById('errorMsg').style.display = 'none';
         document.getElementById('popup').style.display = 'none';
         document.getElementById('score').classList.remove("hidden");
-        document.getElementById('health').classList.remove("hidden");
         document.getElementById('gameCanvas').classList.remove("hidden");
         document.getElementById('gameTime').classList.remove("hidden");
+        document.getElementById('health1').classList.remove("hidden");
+        document.getElementById('health2').classList.remove("hidden");
+        document.getElementById('health3').classList.remove("hidden");
         start = true;
         direction = RIGHT;
         startGame();
@@ -407,8 +409,8 @@ function physicsProcess() {
         if (((snake[0].x == 0 && direction != RIGHT) || (snake[0].x == 14 && direction != LEFT)) && cookieTime == 0 && !dead) {
                 if (!colliding) {
                         health--;
+                        document.getElementById("health"+String(health+1)).classList.add("hidden");
                         colliding = true;
-                        document.getElementById("health").innerText = "Health : " + String(health);
                         console.log("hit");
                         if (health == 0) die(1);
                 }
@@ -519,8 +521,10 @@ function die(cause) {
         document.getElementById("gameCanvas").classList.add("hidden");
         document.getElementById("gameoverbox").classList.remove("hidden");
         document.getElementById("score").classList.add("hidden");
-        document.getElementById("health").classList.add("hidden");
         document.getElementById('gameTime').classList.add("hidden");
+        document.getElementById('health1').classList.add("hidden");
+        document.getElementById('health2').classList.add("hidden");
+        document.getElementById('health3').classList.add("hidden");
         document.getElementById("endScore").innerText = score;
         document.getElementById("time").innerText = String(time) + "s";
         document.getElementById("NAME").innerHTML=playerName;
@@ -582,7 +586,6 @@ function reset() {
         time = 0;
 
         document.getElementById("score").innerText = "Score: 0";
-        document.getElementById("health").innerText = "Health: 3";
 
         snake.splice(0,snake.length);
 
@@ -599,8 +602,10 @@ function reset() {
         document.getElementById("gameCanvas").classList.remove("hidden");
         document.getElementById("gameoverbox").classList.add("hidden");
         document.getElementById("score").classList.remove("hidden");
-        document.getElementById("health").classList.remove("hidden");
         document.getElementById('gameTime').classList.remove("hidden");
+        document.getElementById('health1').classList.remove("hidden");
+        document.getElementById('health2').classList.remove("hidden");
+        document.getElementById('health3').classList.remove("hidden");
 
         start = true;
         dead = false;
