@@ -37,31 +37,31 @@ canvas.height = 640;
 
 //defining images
 const bg = new Image();
-bg.src = 'backtile2.png';
+bg.src = 'static/backtile2.png';
 
 const sHead = new Image();
-sHead.src = 'snakehead.png';
+sHead.src = 'static/snakehead.png';
 
 const sBod = new Image();
-sBod.src = 'snakebod.png';
+sBod.src = 'static/snakebod.png';
 
 const sCurve = new Image();
-sCurve.src = 'snakeCurve.png';
+sCurve.src = 'static/snakeCurve.png';
 
 const sTail = new Image();
-sTail.src = 'snaketail.png';
+sTail.src = 'static/snaketail.png';
 
 const greenApple = new Image();
-greenApple.src = 'Apple.png';
+greenApple.src = 'static/Apple.png';
 
 const goldenApple = new Image();
-goldenApple.src = 'goldenApple.png';
+goldenApple.src = 'static/goldenApple.png';
 
 const cookie = new Image();
-cookie.src = 'cookie.png';
+cookie.src = 'static/cookie.png';
 
 const borders = new Image();
-borders.src = 'borders.png';
+borders.src = 'static/borders.png';
 
 //defining the Point class(used to store positions of snake parts and to define direction)
 //for the type variable, 0 = snake head, 1 = snake body, 2 = curve, 3 = tail, 10 = powerup 1
