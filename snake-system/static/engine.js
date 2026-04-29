@@ -22,6 +22,14 @@ document.getElementById('startBtn').addEventListener('click', function() {
         document.getElementById('health3').classList.remove("hidden");
         start = true;
         direction = RIGHT;
+        //difficulty variable
+
+        let difficulty = Number(document.getElementById("diffSlider").value);
+        if (difficulty == 1) speed = 200;
+        else if (difficulty == 2) speed = 100;
+        else speed = 50;
+        console.log(speed);
+
         startGame();
 });
 
@@ -102,7 +110,7 @@ function getRandomInt(min, max) {
 }
 
 //defining the speed of the game (frequency at which game loop repeats(in ms)). one "game tick" is just this amount of time(again, in ms)
-let speed = 100;
+let speed;
 
 //making variables to make sure snake doesnt go through itself
 let leftDelay = 0;
@@ -112,6 +120,7 @@ let downDelay = 0;
 
 //playtime variable
 time = 0;
+
 
 //changing direction based on keyboard inputs. direction is assigned to newDirection instead of direction directly to prevent multiple direction changes in the same game tick
 window.addEventListener('keydown', (event) => {
