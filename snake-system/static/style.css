@@ -26,11 +26,28 @@ flex-direction: column;
       
 }
 
+@keyframes rainbow {
+    0%   { color: red; }
+    16%  { color: orange; }
+    33%  { color: yellow; }
+    50%  { color: green; }
+    66%  { color: blue; }
+    83%  { color: violet; }
+    100% { color: red; }
+}
 
+@keyframes rainbowTitle {
+    0%   { color: red; text-shadow:0 0 30px red; }
+    16%  { color: orange; text-shadow:0 0 30px orange; }
+    33%  { color: yellow; text-shadow:0 0 30px yellow; }
+    50%  { color: green; text-shadow:0 0 30px green; }
+    66%  { color: blue; text-shadow:0 0 30px blue; }
+    83%  { color: violet; text-shadow:0 0 30px violet; }
+    100% { color: red; text-shadow:0 0 30px red; }
+}
 
 #SNAKE{
-    color: #39FF14;
-    text-shadow:0 0 30px #39FF14;
+    animation: rainbowTitle 5s linear infinite;
     font-size: 30px;    
     font-weight: 800;
     letter-spacing: 5px;
@@ -207,7 +224,7 @@ flex-direction: column;
   margin-bottom: 30px;
 }
 #deathbox{
-  width: 150px;
+  width: 250px;
   height: 30px;
   display: flex;
   flex-direction:column;
@@ -292,6 +309,48 @@ flex-direction: column;
     background: #66BB6A;
 }
 
-#score, #health {
-        color: white;
+#gameWrap {
+    display: flex;
+    flex-direction: column;
+}
+
+#stats {
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    pointer-events: none;
+}
+
+#stats span {
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    text-shadow: 0 0 6px #39FF14;
+}
+
+#stats span:not(.hidden) {
+    display: inline;
+}
+
+#cookieTime {
+    animation: rainbow 2s linear infinite;
+}
+
+#score {
+    color: gold;
+}
+
+#health {
+    color: greenyellow;
+}
+
+#gameTime {
+    color: white;
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    text-shadow: 0 0 6px #39FF14;
 }
