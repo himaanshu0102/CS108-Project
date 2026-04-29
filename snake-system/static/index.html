@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
         <head>
-                <link rel="stylesheet" href="static/style.css">
+                <link rel="static/stylesheet" href="style.css">
         </head>
 
         <body>
@@ -54,6 +54,20 @@
                                         <span class="keyword">&rarr;</span>
                                 </span>
                                 <span class="middle">to move</span>
+                                <div id="difficultySlider">
+                                        <input id="diffSlider" type="range" min="1" max="3" step="1" value="1" list="difficulty">
+                                        <datalist id="difficulty">
+                                                <option value="1"></option>
+                                                <option value="2"></option>
+                                                <option value="3"></option>     
+                                        </datalist>
+
+                                        <div class="sliderLabels">
+                                                <span id="ediff">easy</span>
+                                                <span id="hdiff"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hard</span>
+                                                <span id="idiff">INSANE</span>
+                                        </div>
+                                </div>
                         </div>
                         <input type="text" id="Username" placeholder="Enter your First name">
                         <p class="error-msg" id="errorMsg">Please enter your name</p>
