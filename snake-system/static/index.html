@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+        <head>
+                <link rel="stylesheet" href="static/style.css">
+        </head>
+
+        <body>
+
+                <div id='popup'>
+                        <div id='SNAKE'>SNAKE</div>
+                        <div id='foodbox'>
+                                <div id='foodtype'>FOOD TYPES</div>
+                                <div>
+                                        <span class="dot carrot"></span>
+                                        <span class="label">Green Apple -</span>
+                                        <span class="effect">health +1</span>
+                                </div>
+                                <div>
+                                        <span class="dot pumpkin"></span>
+                                        <span class="label">Golden Apple -</span>
+                                        <span class="effect">health +3</span>
+                                </div>
+                                <div>
+                                        <span class="dot golden"></span>
+                                        <span class="label">COOKIEEZZZZ -</span>
+                                        <span class="effect">immunity 10s</span>
+                                </div>
+                                <div>
+                                        <span class="dot blue"></span>
+                                        <span class="label">Lightning -</span>
+                                        <span class="effect">time slow 10s</span>
+                                </div>
+                        </div>
+  
+                        <div>
+                                <span class="keybox">
+                                        <span class="keyword">W</span>
+                                </span>
+                                <span class="keybox">
+                                        <span class="keyword">A</span>
+                                </span>
+                                <span class="keybox">
+                                        <span class="keyword">S</span>
+                                </span>
+                                <span class="keybox">
+                                        <span class="keyword">D</span>
+                                </span>
+                                <span class="middle">or</span>
+                                <span class="keybox">
+                                        <span class="keyword">&uarr;</span>
+                                </span>
+                                <span class="keybox">
+                                        <span class="keyword">&larr;</span>
+                                </span>
+                                <span class="keybox">
+                                        <span class="keyword">&darr;</span>
+                                </span>
+                                <span class="keybox">
+                                        <span class="keyword">&rarr;</span>
+                                </span>
+                                <span class="middle">to move</span>
+                                <div id="difficultySlider">
+                                        <input id="diffSlider" type="range" min="1" max="4" step="1" value="1" list="difficulty">
+                                        <datalist id="difficulty">
+                                                <option value="1"></option>
+                                                <option value="2"></option>
+                                                <option value="3"></option>
+                                                <option value="4"></option> 
+                                        </datalist>
+
+                                        <div class="sliderLabels">
+                                                <span id="ediff">easy</span>
+                                                <span id="mdiff">&nbsp;&nbsp;medium</span>
+                                                <span id="hdiff"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hard</span>
+                                                <span id="idiff">INSANE</span>
+                                        </div>
+                                </div>
+                        </div>
+                        <input type="text" id="Username" placeholder="Enter your First name">
+                        <p class="error-msg" id="errorMsg">Please enter your name</p>
+                        <button class="start-btn" id="startBtn">Start Game</button>
+                </div>
+
+                <div id="gameWrap">
+                        <div id="gameTime" class="hidden">Time: 0</div>
+                        <div>
+                                <span id="health1" class="hidden"><img src="static/heart.png"></span>
+                                <span id="health2" class="hidden"><img src="static/heart.png"></span>
+                                <span id="health3" class="hidden"><img src="static/heart.png"></span>
+                        </div>
+                        <div id="stats">
+                                <span id="score" class="hidden">Score: 0</span>
+                                <span id="cookieTime" class="hidden">Barrier immunity: </span>
+
+                        </div>
+                        <div id="container">
+                                <canvas id="gameCanvas" class="hidden"></canvas>
+                        </div>
+                </div>
+                
+
+                <div id="gameoverbox" class="hidden">
+                        <div id="gameover">GAME OVER</div>
+                        <div id="line"></div>
+                        <div id= "deathbox">
+                                <div id ="causeofdeath"></div>
+                        </div>
+                        <div id ="NAME"></div>
+                        <div id="details">
+                                <span id="box">
+                                        <div id="head">SCORE</div>
+                                        <div id="endScore"></div>
+                                </span>
+                                <span id="box">
+                                        <div id="head">TIME</div>
+                                        <div id="time"></div>
+                                </span>
+                                <span id="box">
+                                        <div id="head">BEST</div>
+                                        <div id="best"></div>
+                                </span>
+                        </div>
+                        <div id="timestamp"></div>
+                        <button class="play-again-btn" id="playagain">PLAY AGAIN</button>
+                </div>
+                        
+                <script src="static/engine.js"></script>
+        </body>
+</html>
