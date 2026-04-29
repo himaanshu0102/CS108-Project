@@ -3,7 +3,7 @@ let start = false;
 
 //start button, main page stuff
 let playerName = '';
-
+let best =0;
 //defining variable for speed reference
 let refSpeed;
 
@@ -574,7 +574,7 @@ function die(cause) {
         cookieTime = 0;
 
         //handles best score
-        let best =0;
+        
         if(score > best){
                 best = score;
         }
