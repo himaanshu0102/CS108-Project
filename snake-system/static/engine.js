@@ -3,7 +3,9 @@ let start = false;
 
 //start button, main page stuff
 let playerName = '';
-let best = 0;
+
+//defining variable for speed reference
+let refSpeed;
 
 document.getElementById('startBtn').addEventListener('click', function() {
         let name = document.getElementById('Username').value.trim();
@@ -27,10 +29,11 @@ document.getElementById('startBtn').addEventListener('click', function() {
 
         let difficulty = Number(document.getElementById("diffSlider").value);
         if (difficulty == 1) speed = 200;
-        else if (difficulty == 2) speed = 100;
+        else if (difficulty == 2) speed = 150;
+        else if (difficulty == 3) speed = 100;
         else speed = 50;
-        console.log(speed);
-        
+        refSpeed = speed;
+
         startGame();
 });
 
@@ -73,6 +76,9 @@ cookie.src = 'static/cookie.png';
 
 const borders = new Image();
 borders.src = 'static/borders.png';
+
+const lightning = new Image();
+lightning.src = 'static/lightning.png';
 
 //defining the Point class(used to store positions of snake parts and to define direction)
 //for the type variable, 0 = snake head, 1 = snake body, 2 = curve, 3 = tail, 10 = powerup 1
@@ -272,6 +278,7 @@ function setImage() {
                 if (powerups[i].type == 1) ctx.drawImage(greenApple, -16, -16);
                 else if (powerups[i].type == 2) ctx.drawImage(goldenApple, -16, -16);
                 else if (powerups[i].type == 3) ctx.drawImage(cookie, -16, -16);
+                else if (powerups[i].type == 4) ctx.drawImage(lightning, -16, -16)
                 
                 ctx.restore();
         }
@@ -315,6 +322,9 @@ let dead = 0;
 //adding a countdown for the cookie powerup
 let cookieTime = 0;
 
+//adding a countdown for lightning powerup
+let lightningTime = 0;
+
 function spawnPowerUP() {
 
         let grid = [];
@@ -341,8 +351,11 @@ function spawnPowerUP() {
         let type;
         if (rng >0.4) type = 1;
         else if (rng > 0.15) type = 2;
-        else if (rng <= 0.15 && cookieTime != 0) type = 2;
-        else type = 3;
+        else if (rng > 0.05 && cookieTime != 0) type = 2;
+        else if (rng > 0.05) type = 3;
+        else if (rng <= 0.05 && lightningTime !=0 && cookieTime!= 0) type = 3;
+        else if (rng <= 0.05 && lightningTime != 0) type = 2;
+        else if (rng <= 0.05) type = 4;
 
         powerups.push(new Point(xPower, yPower, type));
 }
@@ -403,6 +416,11 @@ function physicsProcess() {
                                 cookieTime = 10;
                                 cookieHit();
                         }
+
+                        else if (powerups[i].type == 4) {
+                                lightningTime = 10;
+                                lightningHit();
+                        }
                         powerups.splice(i,1);
                         spawnPowerUP();
                         
@@ -456,6 +474,7 @@ function physicsProcess() {
 }
 
 let cookieInterval = null;
+let lightningInterval = null;
 
 function cookieTimer() {
         if (cookieTime>0) cookieTime--;
@@ -475,12 +494,34 @@ function cookieHit() {
         cookieInterval = setInterval (cookieTimer, 1000);
 }
 
+let gameInterval = null;
+
+function lightningTimer() {
+        if (lightningTime>0) lightningTime--;
+        if (lightningTime == 0) {
+                clearInterval(lightningInterval);
+                lightningInterval = null;
+                clearInterval(gameInterval);
+                gameInterval = setInterval(physicsProcess, refSpeed)
+        }
+        console.log(lightningTime)
+}
+
+function lightningHit() {
+        if (lightningInterval !== null) {
+                clearInterval(lightningInterval);
+                lightningInterval = null;
+        }
+        lightningInterval = setInterval (lightningTimer, 1000);
+        clearInterval(gameInterval);
+        gameInterval = setInterval(physicsProcess, refSpeed*2);
+}
+
 function timeIncrease() {
         time++;
         document.getElementById("gameTime").innerText = "Time: " + time;
 }
 
-let gameInterval = null;
 let timeInterval = null;
 
 function startGame() {
@@ -508,7 +549,7 @@ function die(cause) {
         start = false;
         cookieTime = 0;
 
-        
+        let best =0;
         if(score > best){
                 best = score;
         }
@@ -551,8 +592,7 @@ function die(cause) {
 
         document.getElementById("timestamp").innerHTML= timestamp;
 
-
-//sending score data to server to be stored in database and displayed on history.txt
+        //sending score data to server to be stored in database and displayed on history.txt
         let deathCause = '';
                 if (cause == 0) {
                         deathCause = 'SELF';
