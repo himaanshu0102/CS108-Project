@@ -1,0 +1,380 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{parskip}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{graphicx}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    backgroundcolor=\color{gray!10},
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{orange!80!black},
+    frame=single,
+    rulecolor=\color{gray!40},
+    breaklines=true,
+    showstringspaces=false,
+    columns=fullflexible
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{CS108 Project Report}
+\rhead{Snake Stack}
+\cfoot{Page \thepage}
+
+\title{\textbf{Snake Stack}\\CS108 --- Software Systems Lab\\Project Report}
+\author{Sajal Sahu \quad Himaanshu}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+%-----------------------------------------------------------------------
+\section{External Libraries}
+
+The following external libraries and tools were used in the project:
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Library/Tool} & \textbf{Version} & \textbf{Purpose} \\
+\midrule
+Flask       & 3.1.1   & Python web framework used to serve the game frontend and handle score submission via REST API. \\
+Bootstrap   & 5.3.0   & CSS framework bundled locally for responsive layout and styling of modals, buttons, and input elements. \\
+Python      & 3.10.12 & Runtime for the Flask backend server. \\
+Bash        & 5.x     & Scripting language for the administration utility that processes the flat-file database. \\
+LibreSprite & ---     & Pixel art editor used to create all game sprites (snake, food, borders, hearts). \\
+bc          & ---     & Bash calculator used for arithmetic operations in analytics (averages, fractions). \\
+zip         & ---     & Compression utility used for log rotation backup. \\
+\bottomrule
+\end{tabular}
+\caption{External libraries and tools used in the project.}
+\end{table}
+
+Standard Python libraries used: \texttt{datetime} (timestamp generation), \texttt{json} (implicit via Flask), \texttt{os} (file operations).
+
+%-----------------------------------------------------------------------
+\section{Design \& Architecture}
+
+\subsection{Three-Layer Architecture}
+
+The project follows a strict three-layer separation of concerns:
+
+\begin{lstlisting}
+Browser (JS) --> POST /save_score --> Flask (Python) --> history.txt <-- Bash
+\end{lstlisting}
+
+\begin{enumerate}
+    \item \textbf{Layer 1 --- Frontend (JavaScript + HTML5 Canvas):} Handles the entire game experience including rendering, input handling, collision detection, and score reporting. The frontend only knows the API endpoint URL (\texttt{/save\_score}) and contains no file I/O or storage logic.
+
+    \item \textbf{Layer 2 --- Backend (Python/Flask):} Serves the static game files and provides a REST endpoint for score submission. Flask validates incoming JSON payloads, generates server-side timestamps, and appends formatted entries to \texttt{history.txt}.
+
+    \item \textbf{Layer 3 --- Administration (Bash):} Reads \texttt{history.txt} directly using text-processing tools (\texttt{awk}, \texttt{cut}, \texttt{sort}, \texttt{sed}, \texttt{grep}, \texttt{head}, \texttt{tail}). It operates independently of the Flask server.
+\end{enumerate}
+
+\subsection{Data Format}
+
+Each game result is stored as a single line in \texttt{history.txt}:
+
+\begin{lstlisting}
+[2025-06-12 14:35:02] Herobrine | 42 | WALL | 85
+\end{lstlisting}
+
+Fields are separated by \texttt{' | '} (space-pipe-space). This delimiter was chosen because:
+\begin{itemize}
+    \item Pipes are not common in usernames, preventing parsing ambiguity.
+    \item The format is human-readable and easy to parse with \texttt{cut -d '|'}.
+    \item Square brackets around the timestamp make it visually distinct and parseable with regex.
+\end{itemize}
+
+\subsection{Game Engine Design}
+
+The game engine uses a \texttt{Point} class to represent positions on the grid. The snake is stored as an array of \texttt{Point} objects, where each element has \texttt{x}, \texttt{y} coordinates and a \texttt{type} variable for sprite selection:
+
+\begin{itemize}
+    \item Type 0 = Head
+    \item Type 1 = Straight body
+    \item Type 2 = Curved body
+    \item Type 3 = Tail
+\end{itemize}
+
+Snake rendering at curves is determined by checking the previous and next point's positions relative to the current point. If neighbors are on the same axis, a straight sprite is used; otherwise, a curve sprite is rendered with appropriate rotation.
+
+%-----------------------------------------------------------------------
+\section{Features Implemented}
+
+\subsection{Frontend Features}
+
+\begin{itemize}
+    \item \textbf{Start Modal:} Displays game rules, food type descriptions, control instructions, difficulty slider, and username input with validation (Figure~2).
+
+    \item \textbf{Game Canvas:} 15$\times$20 grid-based Snake game rendered on HTML5 Canvas with pixel art sprites created in LibreSprite.
+
+    \item \textbf{Controls:} Arrow keys and WASD support with direction change protection (prevents reversing into self within same tick).
+
+    \item \textbf{Four Food Types:}
+    \begin{itemize}
+        \item Green Apple --- Health +1 (snake grows by 1)
+        \item Golden Apple --- Health +3 (snake grows by 3)
+        \item Cookie --- Barrier immunity for 10 seconds
+        \item Lightning --- Time slow for 10 seconds (halves game speed)
+    \end{itemize}
+
+    \item \textbf{Health System:} 3 lives for wall collisions, displayed as heart icons. Self-collision causes instant death.
+
+    \item \textbf{Difficulty Slider:} Four levels --- Easy (200ms), Medium (150ms), Hard (100ms), Insane (50ms).
+
+    \item \textbf{Game Over Modal:} Shows death cause, random death message, score, time survived, session best score, timestamp, and a Play Again button (Figure~5).
+
+    \item \textbf{Score Reporting:} Automatic POST request to \texttt{/save\_score} on death via fetch API.
+
+    \item \textbf{Session Best Score:} Tracked in a JavaScript variable across games within the same browser session.
+
+    \item \textbf{Score:} Score is defined as the number of points gained from collecting powerups. It is always 4 greater than the snake's length, since length grows in step with score but the initial snake length is set to 4.
+
+    \item \textbf{Point Class:} A \texttt{Point} class is defined to store \texttt{x}, \texttt{y}, and \texttt{type} fields, serving as the building block for both snake parts and powerup positions on the grid.
+
+    \item \textbf{Snake Array:} All snake parts are stored in a \texttt{snake[]} array, where index 0 is always the head and subsequent indices represent body and tail segments in order.
+
+    \item \textbf{Powerup Spawning with Probability:} A random number generator is used to determine which powerup spawns at a given time. Each powerup type is assigned a probability range --- rarer powerups (such as lightning and cookie) have lower probabilities than common ones (such as the green apple), so they appear less frequently.
+
+    \item \textbf{Type Field Usage:} The \texttt{type} field of a \texttt{Point} serves a dual purpose: for snake parts it encodes whether the segment is a head (0), straight body (1), curved body (2), or tail (3); for powerups it encodes which food type the point represents (1 = green apple, 2 = golden apple, 3 = cookie, 4 = lightning).
+
+    \item \textbf{Type Determination for Snake Parts:} The \texttt{type} of each non-head snake part is decided by comparing the \texttt{x} and \texttt{y} coordinates of its preceding and succeeding points. If the preceding and succeeding points share the same \texttt{x} or the same \texttt{y}, the part is classified as straight (type 1); otherwise it is classified as curved (type 2). For curved parts, the position deltas between neighbours are further compared to determine the correct rotation angle for the curve sprite.
+
+    \item \textbf{Collision Detection:} All three collision types are resolved by comparing the snake head's position against the relevant target. Powerup collision checks whether the head's coordinates match any powerup in the \texttt{powerups[]} array; self-collision checks whether the head's coordinates match any other element in \texttt{snake[]}; wall collision checks whether the head's \texttt{x} or \texttt{y} is at the grid boundary while moving toward it.
+\end{itemize}
+
+\subsection{Backend Features}
+
+\begin{itemize}
+    \item \textbf{Static File Serving:} Flask serves \texttt{index.html} and all assets from the \texttt{static/} directory.
+
+    \item \textbf{Score Endpoint:} POST \texttt{/save\_score} validates JSON fields (\texttt{name}, \texttt{score}, \texttt{cause}, \texttt{duration}), generates a server-side timestamp, and appends to \texttt{history.txt}.
+
+    \item \textbf{Input Validation:} Rejects requests with missing fields, empty names, or invalid cause values (must be \texttt{WALL} or \texttt{SELF}).
+\end{itemize}
+
+\subsection{Bash Admin Features}
+
+\begin{itemize}
+    \item \textbf{User Selection:} Filter all queries to a specific user via a sub-menu.
+    \item \textbf{Analytics:} Top 5 users, average score, average time survived, wall/self death fractions --- computed using \texttt{awk}, \texttt{cut}, \texttt{bc}.
+    \item \textbf{Recent Scores:} Paginated view (5 per page) with colored output.
+    \item \textbf{Deletion:} By username, exact timestamp, before/after timestamp, or invalid records --- using \texttt{sed -i} for deletion with confirmation prompts.
+    \item \textbf{Log Rotation:} Backs up \texttt{history.txt} as a compressed zip and keeps only the last 10 entries.
+    \item \textbf{Sorting:} By score, timestamp, or username.
+    \item \textbf{ANSI Colors:} Wall deaths displayed in blue, self deaths in red, menu items in yellow/green/cyan.
+    \item \textbf{Edge Case Handling:} Checks for missing or empty \texttt{history.txt} before starting.
+\end{itemize}
+
+%-----------------------------------------------------------------------
+\section{Directory Structure}
+
+\begin{lstlisting}
+snake-system/
+  app.py              # Flask backend server
+  admin.sh            # Bash administration script
+  history.txt         # Game score storage (auto-created)
+  requirements.txt    # Python dependencies (flask==3.1.1)
+  README.md           # Setup and usage documentation
+  report/
+    report.tex        # LaTeX report source
+    Makefile          # Compiles the report
+  static/
+    index.html        # Main game page with modals
+    style.css         # All CSS styles
+    engine.js         # Game logic and rendering
+    bootstrap.min.css           # Bootstrap CSS (bundled offline)
+    bootstrap.bundle.min.js     # Bootstrap JS (bundled offline)
+    Apple.png         # Green apple sprite
+    goldenApple.png   # Golden apple sprite
+    cookie.png        # Cookie sprite
+    lightning.png     # Lightning powerup sprite
+    snakehead.png     # Snake head sprite
+    snakebod.png      # Snake body sprite
+    snakeCurve.png    # Snake curve sprite
+    snaketail.png     # Snake tail sprite
+    heart.png         # Health indicator sprite
+    backtile2.png     # Game background tile
+    borders.png       # Game border overlay
+\end{lstlisting}
+
+%-----------------------------------------------------------------------
+\section{Installation \& Setup}
+
+\subsection{Prerequisites}
+
+\begin{itemize}
+    \item Python 3.10.12
+    \item pip
+    \item A modern web browser (Chrome, Firefox, Edge)
+    \item Bash shell (for admin script)
+    \item \texttt{bc}, \texttt{zip} (for admin analytics and log rotation)
+\end{itemize}
+
+\subsection{Setup Steps}
+
+\begin{lstlisting}
+# Clone the repository
+git clone https://github.com/himaanshu0102/CS108-Project.git
+cd CS108-Project/snake-system
+
+# Create and activate virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start the Flask server
+python3 app.py
+\end{lstlisting}
+
+The server starts on \texttt{http://127.0.0.1:5000}. Open this URL in a browser to play the game.
+
+To run the admin script (does not require the server to be running):
+
+\begin{lstlisting}
+bash admin.sh
+\end{lstlisting}
+
+%-----------------------------------------------------------------------
+\section{Usage}
+
+\subsection{Starting the Server}
+
+Run \texttt{python3 app.py} from the \texttt{snake-system/} directory. The terminal shows the Flask development server running on localhost (Figure~1).
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\textwidth]{fig1.png}
+\caption{Flask server running on \texttt{http://127.0.0.1:5000}.}
+\end{figure}
+
+\subsection{Playing the Game}
+
+\begin{enumerate}
+    \item Open \texttt{http://127.0.0.1:5000} in a browser.
+    \item The start modal appears with game rules, food types, controls, and a difficulty slider (Figure~2).
+    \item Enter your first name and select a difficulty level.
+    \item Click \textbf{Start Game} to begin (Figure~3).
+    \item Control the snake using WASD or Arrow Keys. Collect food to grow and increase your score (Figure~4).
+    \item When the snake dies, the game over screen displays your score, time, best score, cause of death, and a random death message (Figure~5).
+    \item Click \textbf{Play Again} to restart.
+\end{enumerate}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.65\textwidth]{fig2.png}
+\caption{Start modal showing game rules, food types, controls, and difficulty slider.}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.65\textwidth]{fig3.png}
+\caption{Player entering their name before starting the game.}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.75\textwidth]{fig4.png}
+\caption{Gameplay showing the snake, food, health hearts, score, and timer.}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.65\textwidth]{fig5.png}
+\caption{Game over screen with death cause, score, time, best score, and timestamp.}
+\end{figure}
+
+\subsection{Using the Admin Script}
+
+Run \texttt{bash admin.sh} from the \texttt{snake-system/} directory. The menu-driven interface appears with colored output (Figure~6).
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\textwidth]{fig6.png}
+\caption{Running the bash admin script.}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\textwidth]{fig7.png}
+\caption{Bash admin script menu with ANSI colored output.}
+\end{figure}
+
+%-----------------------------------------------------------------------
+\section{Retrospective}
+
+\subsection{Challenges Faced}
+
+\begin{enumerate}
+    \item \textbf{Snake curve rendering:} Determining the correct rotation for curve sprites when the snake turns was challenging. We solved it by computing the position delta between the previous and next points relative to the current point, and mapping each combination to a rotation angle.
+
+    \item \textbf{Wall wrap-around vs.\ wall death:} The initial implementation allowed the snake to wrap around walls. We redesigned this to implement a health-based wall collision system where the snake loses one of three hearts on each wall hit, dying only when all hearts are depleted.
+
+    \item \textbf{Bash deletion with special characters:} The \texttt{history.txt} format contains square brackets and pipes, which are special characters in \texttt{sed} regex. We solved this by escaping all special characters before passing lines to \texttt{sed} for deletion.
+
+    \item \textbf{Preserving other users' data during user-specific deletion:} Initially, deletion operations overwrote \texttt{history.txt} with only the filtered user's data. We fixed this by using \texttt{sed -i} to delete only the specific lines, keeping other users' records intact.
+
+    \item \textbf{Multiple direction changes per game tick:} Without a \texttt{nextDirection} buffer, rapid key presses could cause the snake to reverse into itself. We implemented a direction queue that only applies the latest input at the start of each game tick.
+
+    \item \textbf{Offline Bootstrap:} The project must run without internet access. We bundled Bootstrap's minified CSS and JS files locally in the \texttt{static/} folder instead of using CDN links.
+\end{enumerate}
+
+\subsection{What We Would Do Differently With More Time}
+
+\begin{enumerate}
+    \item \textbf{Leaderboard page:} Add a separate route that displays a formatted leaderboard fetched from \texttt{history.txt}, visible in the browser.
+    \item \textbf{Sound effects:} Add audio feedback for eating food, dying, and collecting powerups using the Web Audio API.
+    \item \textbf{Smoother animations:} Implement interpolation-based movement instead of grid-snapping for a smoother visual experience.
+    \item \textbf{Mobile support:} Add touch/swipe controls so the game is playable on phones and tablets.
+    \item \textbf{More powerups:} Add additional food types such as speed boost, score multiplier, or obstacles that spawn over time.
+    \item \textbf{Persistent high scores:} Fetch the user's all-time best score from the server on login, rather than tracking only the current session.
+\end{enumerate}
+
+%-----------------------------------------------------------------------
+\section{References}
+
+\begin{enumerate}
+    \item Flask Documentation --- \url{https://flask.palletsprojects.com/en/stable/} \cite{flask_docs}
+    \item Flask Quickstart Guide --- \url{https://flask.palletsprojects.com/en/stable/quickstart/} \cite{flask_quickstart}
+    \item MDN Web Docs: Canvas API --- \url{https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API} \cite{mdn_canvas}
+    \item MDN Web Docs: Fetch API --- \url{https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API} \cite{mdn_fetch}
+    \item MDN Web Docs: KeyboardEvent --- \url{https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent} \cite{mdn_keyboard}
+    \item MDN Web Docs: setInterval --- \url{https://developer.mozilla.org/en-US/docs/Web/API/setInterval} \cite{mdn_setinterval}
+    \item MDN Web Docs: JSON.stringify --- \url{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify} \cite{mdn_json_stringify}
+    \item Bootstrap 5 Documentation --- \url{https://getbootstrap.com/docs/5.3/} \cite{bootstrap_docs}
+    \item GNU Sed Manual --- \url{https://www.gnu.org/software/sed/manual/sed.html} \cite{gnu_sed}
+    \item GNU Awk Manual --- \url{https://www.gnu.org/software/gawk/manual/gawk.html} \cite{gnu_awk}
+    \item GNU Coreutils (sort, cut, head, tail) --- \url{https://www.gnu.org/software/coreutils/manual/coreutils.html} \cite{gnu_coreutils}
+    \item Bash Reference Manual --- \url{https://www.gnu.org/software/bash/manual/bash.html} \cite{bash_manual}
+    \item ANSI Escape Codes --- \url{https://en.wikipedia.org/wiki/ANSI_escape_code} \cite{ansi_escape}
+    \item Snake Game (Wikipedia) --- \url{https://en.wikipedia.org/wiki/Snake_(video_game_genre)} \cite{snake_wikipedia}
+    \item LibreSprite --- \url{https://libresprite.github.io/} \cite{libresprite}
+    \item Python datetime Module --- \url{https://docs.python.org/3.10/library/datetime.html} \cite{python_datetime}
+    \item Flask Tutorial (Real Python) --- \url{https://realpython.com/tutorials/flask/} \cite{realpython_flask}
+    \item Flask Mega-Tutorial by Miguel Grinberg --- \url{https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world} \cite{grinberg_flask}
+\end{enumerate}
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
